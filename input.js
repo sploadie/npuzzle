@@ -1,5 +1,3 @@
-
-
 var readfile = function(filename)	{
 	var fs = require("fs");
 	try {
@@ -10,7 +8,6 @@ var readfile = function(filename)	{
 	}
   return(data);
 };
-
 
 var parse = function(argv) {
 	if (argv.length != 3) {
@@ -44,14 +41,8 @@ var parse = function(argv) {
 
  	// go do a bunch of checks
 
-
 	console.log(n);
 	console.log(npuzzle);
-
-
-
-
 };
 
 parse(process.argv);
-
