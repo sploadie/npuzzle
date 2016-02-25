@@ -1,13 +1,14 @@
-var Board = class {
-	initialize: function(string) {
-		this.puzzle = string;
-	},
+"use strict";
 
-	print: function() {
-		return(string);
+class Board {
+	constructor (text) {
+		this.puzzle = text;
+	}
+
+	print () {
+		console.log(this.puzzle);
 	}
 };
 
-var test = new Board("well hello there");
-
-console.log(test.print);
+const test = new Board("well hello there");
+test.print();
