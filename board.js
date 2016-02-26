@@ -47,15 +47,15 @@ class Board {
   neighbours () {
     var array_neighbours = [];
     // find where 0 is
-    for (var index = 0; index < this.n; index++) {
-      for (var something = 0; something < this.n; something++) {
-        if (this.npuzzle[index][something] == 0) {
-          break;
+    loop1:
+      for (var index = 0; index < this.n; index++) {
+    loop2:
+        for (var something = 0; something < this.n; something++) {
+          if (this.npuzzle[index][something] == 0) {
+            break loop1;
+          }
         }
       }
-    }
-    // FIXME need a better way to deal with double break out of loop
-    index -= 1;
     var change_points = [[1, 0], [0, 1], [-1, 0], [0, -1]];
     var new_string = "";
     // First checks if the new point would still be within the boundaries of the game
@@ -76,7 +76,7 @@ class Board {
         }
       }
     }
-    console.log(array_neighbours);
+    return(array_neighbours);
   }
 
 	equals (board2) {
@@ -98,10 +98,52 @@ class Board {
 	}
 };
 
-const test0 = new Board("1 2 3 4 5 6 7 8 0", 3);
-const test1 = new Board("1 2 3 4 5 6 7 8 0", 3);
-const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
 
-test2.neighbours();
+var compute = function() {
+  var PriorityQueue = require('priorityqueuejs');
+  
+  const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
+  const test1  = new Board("1 2 3 4 5 6 7 0 8", 3);
+  const test2  = new Board("8 1 3 4 5 6 7 2 0", 3);
+
+  var queue = new PriorityQueue(function(a, b) {
+    return test2.manhattan_distance - test1.manhattan_distance;
+  });
+
+
+};
+
+
+compute();
+// const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
+// const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
+// const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
+
+// test2.neighbours();
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
