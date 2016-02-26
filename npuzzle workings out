@@ -1,19 +1,19 @@
-state = board position, the number of moves made to reach the board position, and the previous state
+lstate = board position, the number of moves made to reach the board position, and the previous state
 
 public class Board {
-  public Board(int[][] tiles)        // construct a board from an N-by-N array of tiles
-  public int hamming()               // return number of blocks out of place
-  public int manhattan()             // return sum of Manhattan distances between blocks and goal
-  public boolean equals(Object y)    // does this board position equal y
-  public Iterable<Board> neighbors() // return an Iterable of all neighboring board positions
-  public String toString()           // return a string representation of the board
+  Board(int[][] tiles)        // construct a board from an N-by-N array of tiles
+  int hamming()               // return number of blocks out of place
+  int manhattan()             // return sum of Manhattan distances between blocks and goal
+  boolean equals(Object y)    // does this board position equal y
+  Iterable<Board> neighbors() // return an Iterable of all neighboring board positions
+  String toString()           // return a string representation of the board
 }
 
 public class Solver {
-   public Solver(Board initial)        // find a solution to the initial board
-   public boolean isSolvable()         // is the initial board solvable?
-   public int moves()                  // return min number of moves to solve initial board; -1 if no solution
-   public Iterable<Board> solution()   // return an Iterable of board positions in solution
+  Solver(Board initial)        // find a solution to the initial board
+  boolean isSolvable()         // is the initial board solvable?
+  int moves()                  // return min number of moves to solve initial board; -1 if no solution
+  Iterable<Board> solution()   // return an Iterable of board positions in solution
 }
 
 var PriorityQueue = require('priorityqueuejs');
@@ -30,3 +30,11 @@ queue.size(); // 3
 queue.peek(); // { cash: 300, name: 'Jano' } 
 queue.deq(); // { cash: 300, name: 'Jano' } 
 queue.size(); // 2 
+
+neighbours
+check if goal
+manhattan distance
+
+1 2 3
+4 5 6
+7 8 0
