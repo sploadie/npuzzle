@@ -43,6 +43,42 @@ class Board {
     // console.log(sum);
 	}
 
+  // Yes, that is the correct spelling
+  neighbours () {
+    var array_neighbours = [];
+    // find where 0 is
+    for (var index = 0; index < this.n; index++) {
+      for (var something = 0; something < this.n; something++) {
+        if (this.npuzzle[index][something] == 0) {
+          break;
+        }
+      }
+    }
+    // FIXME need a better way to deal with double break out of loop
+    index -= 1;
+    var change_points = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    var new_string = "";
+    // First checks if the new point would still be within the boundaries of the game
+    for (var z = 0; z < change_points.length; z++) {
+      if ((change_points[z][0] + index >= 0 && change_points[z][0] + index < this.n) && (change_points[z][1] + something >= 0 && change_points[z][1] + something < this.n)) {
+        // With either the x or y axis, changes around 0 with neighbour and adds to array
+        if (change_points[z][0] == 0) {
+          new_string = this.tostring();
+          new_string = new_string.replace(/0/, this.npuzzle[index][something + change_points[z][1]]);
+          new_string = new_string.replace(this.npuzzle[index][something + change_points[z][1]], 0);
+          array_neighbours.push(new_string);
+        }
+        else {
+          new_string = this.tostring();
+          new_string = new_string.replace(/0/, this.npuzzle[index + change_points[z][0]][something]);
+          new_string = new_string.replace(this.npuzzle[index + change_points[z][0]][something], 0);
+          array_neighbours.push(new_string);
+        }
+      }
+    }
+    console.log(array_neighbours);
+  }
+
 	equals (board2) {
 		if (this.tostring(this.n) == board2.tostring(this.n)) {
 			return true;
@@ -64,8 +100,8 @@ class Board {
 
 const test0 = new Board("1 2 3 4 5 6 7 8 0", 3);
 const test1 = new Board("1 2 3 4 5 6 7 8 0", 3);
-const test2 = new Board("8 2 3 4 5 6 7 2 0", 3);
+const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
 
-test2.manhattan_distance();
+test2.neighbours();
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
