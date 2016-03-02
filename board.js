@@ -1,40 +1,43 @@
-"use strict";
+"use strict"; // so that we can do fun es6 things
+
+_ = require("underscore");
 
 class Board {
-	constructor (string, n) {
-		this.npuzzle = [];
-		this.n       = n
-		this.split   = string.split(" ");
+	constructor (str, board_size) {
+		this.board = [];
+		this.board_size = board_size;
 
-		// places n arrays into npuzzle
-		for (var something = 0; something < n; something++) {
-			this.npuzzle.push([]);
-		}
-		// puts n values into each array, converts them to integers
-		for (var index = 0; index < this.split.length; index++) {
- 	 		this.npuzzle[Math.floor(index / n)].push(parseInt(this.split[index]));
+		// places board_size arrays into board
+		_.times(this.boardSize, () => {
+			this.board.push([]);
+		});
+
+		// puts boardSize values into each array, converts them to integers
+		let split = str.split(" ");
+		for (let index = 0; index < split.length; index++) {
+ 	 		this.board[Math.floor(index / boardSize)].push(parseInt(split[index], 10));
 		}
 	}
 
-	npuzzle () {
-		return(this.npuzzle);
+	board () {
+		return(this.board);
 	}
 
 	manhattan_distance () {
 		var sum = 0;
-    var x = 0;  
-    var y = 0;      
-		for (var index = 0; index < this.n; index++) {
- 	 		for (var something = 0; something < this.n; something++) {
-        if (this.npuzzle[index][something] == 0) {
-          x = Math.abs(index - (this.n - 1));
-          y = Math.abs(something - (this.n - 1));
+    var x = 0;
+    var y = 0;
+		for (var index = 0; index < this.board_size; index++) {
+ 	 		for (var something = 0; something < this.board_size; something++) {
+        if (this.board[index][something] == 0) {
+          x = Math.abs(index - (this.board_size - 1));
+          y = Math.abs(something - (this.board_size - 1));
         }
         else {
-          x = Math.abs(index - Math.floor(((this.npuzzle[index][something] - 1 )/ this.n)));
-          y = Math.abs(something - Math.floor(((this.npuzzle[index][something] - 1 ) % this.n)));
+          x = Math.abs(index - Math.floor(((this.board[index][something] - 1 )/ this.board_size)));
+          y = Math.abs(something - Math.floor(((this.board[index][something] - 1 ) % this.board_size)));
         }
-        // console.log("Number: " + this.npuzzle[index][something])
+        // console.log("Number: " + this.board[index][something])
         // console.log("X: " + x);
         // console.log("Y: " + y);
         sum += x + y
@@ -44,14 +47,15 @@ class Board {
 	}
 
   // Yes, that is the correct spelling
+	// Fine.
   neighbours () {
     var array_neighbours = [];
     // find where 0 is
     loop1:
-      for (var index = 0; index < this.n; index++) {
+      for (var index = 0; index < this.board_size; index++) {
     loop2:
-        for (var something = 0; something < this.n; something++) {
-          if (this.npuzzle[index][something] == 0) {
+        for (var something = 0; something < this.board_size; something++) {
+          if (this.board[index][something] == 0) {
             break loop1;
           }
         }
@@ -60,18 +64,18 @@ class Board {
     var new_string = "";
     // First checks if the new point would still be within the boundaries of the game
     for (var z = 0; z < change_points.length; z++) {
-      if ((change_points[z][0] + index >= 0 && change_points[z][0] + index < this.n) && (change_points[z][1] + something >= 0 && change_points[z][1] + something < this.n)) {
+      if ((change_points[z][0] + index >= 0 && change_points[z][0] + index < this.board_size) && (change_points[z][1] + something >= 0 && change_points[z][1] + something < this.board_size)) {
         // With either the x or y axis, changes around 0 with neighbour and adds to array
         if (change_points[z][0] == 0) {
           new_string = this.tostring();
-          new_string = new_string.replace(/0/, this.npuzzle[index][something + change_points[z][1]]);
-          new_string = new_string.replace(this.npuzzle[index][something + change_points[z][1]], 0);
+          new_string = new_string.replace(/0/, this.board[index][something + change_points[z][1]]);
+          new_string = new_string.replace(this.board[index][something + change_points[z][1]], 0);
           array_neighbours.push(new_string);
         }
         else {
           new_string = this.tostring();
-          new_string = new_string.replace(/0/, this.npuzzle[index + change_points[z][0]][something]);
-          new_string = new_string.replace(this.npuzzle[index + change_points[z][0]][something], 0);
+          new_string = new_string.replace(/0/, this.board[index + change_points[z][0]][something]);
+          new_string = new_string.replace(this.board[index + change_points[z][0]][something], 0);
           array_neighbours.push(new_string);
         }
       }
@@ -79,8 +83,8 @@ class Board {
     return(array_neighbours);
   }
 
-	equals (board2) {
-		if (this.tostring(this.n) == board2.tostring(this.n)) {
+	equals (otherBoard) {
+		if (this.tostring(this.board_size) === otherBoard.tostring(this.board_size)) {
 			return true;
 		}
 		return false;
@@ -89,8 +93,8 @@ class Board {
 	tostring() {
 		var string = [];
 		// turns array of arrays into an array
-		for (var index = 0; index < Math.pow(this.n, 2); index++) {
- 	 		string.push(this.npuzzle[Math.floor(index / this.n)][index % this.n]);
+		for (var index = 0; index < Math.pow(this.board_size, 2); index++) {
+ 	 		string.push(this.board[Math.floor(index / this.board_size)][index % this.board_size]);
 		}
 		string = string.toString();
 		string = string.replace(/,/g, " ");
@@ -101,7 +105,7 @@ class Board {
 
 var compute = function() {
   var PriorityQueue = require('priorityqueuejs');
-  
+
   const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
   const test1  = new Board("1 2 3 4 5 6 7 0 8", 3);
   const test2  = new Board("8 1 3 4 5 6 7 2 0", 3);
@@ -122,28 +126,3 @@ compute();
 // test2.neighbours();
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
