@@ -1,6 +1,6 @@
 "use strict"; // so that we can do fun es6 things
 
-_ = require("underscore");
+var _ = require('underscore');
 
 class Board {
 	constructor (str, board_size) {
@@ -34,16 +34,13 @@ class Board {
           y = Math.abs(something - (this.board_size - 1));
         }
         else {
+          // the formula is where you need to go minus current position, x,y both calculate distance between where we are now and where they need to go
           x = Math.abs(index - Math.floor(((this.board[index][something] - 1 )/ this.board_size)));
           y = Math.abs(something - Math.floor(((this.board[index][something] - 1 ) % this.board_size)));
         }
-        // console.log("Number: " + this.board[index][something])
-        // console.log("X: " + x);
-        // console.log("Y: " + y);
         sum += x + y
 			}
 		}
-    // console.log(sum);
 	}
 
   // Yes, that is the correct spelling
@@ -118,11 +115,11 @@ var compute = function() {
 };
 
 
-compute();
+// compute();
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
-// const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
+const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
 
-// test2.neighbours();
+console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
