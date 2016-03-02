@@ -8,14 +8,14 @@ class Board {
 		this.board_size = board_size;
 
 		// places board_size arrays into board
-		_.times(this.boardSize, () => {
+		_.times(this.board_size, () => {
 			this.board.push([]);
 		});
 
 		// puts boardSize values into each array, converts them to integers
 		let split = str.split(" ");
 		for (let index = 0; index < split.length; index++) {
- 	 		this.board[Math.floor(index / boardSize)].push(parseInt(split[index], 10));
+ 	 		this.board[Math.floor(index / board_size)].push(parseInt(split[index], 10));
 		}
 	}
 
@@ -116,10 +116,10 @@ var compute = function() {
 
 
 // compute();
-// const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
+const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
-const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
+// const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
 
-console.log(test2.neighbours());
+// console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
