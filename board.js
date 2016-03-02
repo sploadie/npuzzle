@@ -1,6 +1,8 @@
 "use strict"; // so that we can do fun es6 things
 
-var _ = require('underscore');
+var _             = require('underscore');
+var PriorityQueue = require('priorityqueuejs');
+
 
 class Board {
 	constructor (str, board_size) {
@@ -17,6 +19,7 @@ class Board {
 		for (let index = 0; index < split.length; index++) {
  	 		this.board[Math.floor(index / board_size)].push(parseInt(split[index], 10));
 		}
+    this.distance = this.manhattan_distance();
 	}
 
 	board () {
@@ -41,6 +44,7 @@ class Board {
         sum += x + y
 			}
 		}
+    return sum;
 	}
 
   // Yes, that is the correct spelling
@@ -103,25 +107,68 @@ class Board {
 
 
 var compute = function() {
-  var PriorityQueue = require('priorityqueuejs');
 
   const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
-  const test1  = new Board("1 2 3 4 5 6 7 0 8", 3);
-  const test2  = new Board("8 1 3 4 5 6 7 2 0", 3);
+  const test1  = new Board("1 2 3 4 5 6 7 0 8", 3); // 2
+  const test3  = new Board("1 5 3 4 2 6 7 0 8", 3); // 4
+  const test2  = new Board("8 1 3 4 5 6 7 2 0", 3); // 6
+  const test5  = new Board("1 5 3 4 2 6 0 8 7", 3); // 6
+  const test4  = new Board("3 7 1 4 5 6 2 0 8", 3); // 12
 
   var queue = new PriorityQueue(function(a, b) {
-    return test2.manhattan_distance - test1.manhattan_distance;
+    return b.manhattan_distance() - a.manhattan_distance();
   });
 
+
+  console.log(test1.manhattan_distance());
+  console.log(test2.manhattan_distance());
+  console.log(test3.manhattan_distance());
+  console.log(test4.manhattan_distance());
+  console.log(test5.manhattan_distance());
+
+  queue.enq(test1);
+  queue.enq(test2);
+  queue.enq(test3);
+  queue.enq(test4);
+  queue.enq(test5);
+
+  queue.forEach(function(a) {
+    console.log(a);
+  });
+
+  console.log("-----------------------");
+
+  // console.log(queue.size());
+  // console.log(queue.peek());
+  console.log(queue.deq());
+  console.log(queue.deq());
+  console.log(queue.deq());
+  console.log(queue.deq());
+  console.log(queue.deq());
+
+
+  // console.log(queue.size());
 
 };
 
 
-// compute();
-const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
+compute();
+// const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
-const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
+// const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
 
-console.log(test2.neighbours());
+// console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
+
+
+
+
+
+
+
+
+
+
+
+
