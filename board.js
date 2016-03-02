@@ -72,14 +72,14 @@ class Board {
           new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index][something + change_points[z][1]], 0);
           new_string = new_string.replace("temp", this.board[index][something + change_points[z][1]]);
-          array_neighbours.push(new_string);
+          array_neighbours.push(new Board(new_string, 3));
         }
         else {
           new_string = this.tostring();
           new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index + change_points[z][0]][something], 0);
           new_string = new_string.replace("temp", this.board[index + change_points[z][0]][something]);
-          array_neighbours.push(new_string);
+          array_neighbours.push(new Board(new_string, 3));
         }
       }
     }
@@ -106,55 +106,44 @@ class Board {
 };
 
 
-var compute = function() {
+var compute = function(initial_board, answer_board) {
 
-  const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
-  const test1  = new Board("1 2 3 4 5 6 7 0 8", 3); // 2
-  const test3  = new Board("1 5 3 4 2 6 7 0 8", 3); // 4
-  const test2  = new Board("8 1 3 4 5 6 7 2 0", 3); // 6
-  const test5  = new Board("1 5 3 4 2 6 0 8 7", 3); // 6
-  const test4  = new Board("3 7 1 4 5 6 2 0 8", 3); // 12
-
+  // FIXME: check if initial board is answer
   var queue = new PriorityQueue(function(a, b) {
     return b.manhattan_distance() - a.manhattan_distance();
   });
 
+  var answer = 0;
+  queue.enq(initial_board);
+  while (answer != 1) {
+    var current_board = queue.deq();
+    var neighbours = current_board.neighbours();
+    console.log(current_board);
 
-  console.log(test1.manhattan_distance());
-  console.log(test2.manhattan_distance());
-  console.log(test3.manhattan_distance());
-  console.log(test4.manhattan_distance());
-  console.log(test5.manhattan_distance());
-
-  queue.enq(test1);
-  queue.enq(test2);
-  queue.enq(test3);
-  queue.enq(test4);
-  queue.enq(test5);
-
-  queue.forEach(function(a) {
-    console.log(a);
-  });
-
-  console.log("-----------------------");
-
-  // console.log(queue.size());
-  // console.log(queue.peek());
-  console.log(queue.deq());
-  console.log(queue.deq());
-  console.log(queue.deq());
-  console.log(queue.deq());
-  console.log(queue.deq());
+    neighbours.forEach(function(neighbour) {
+      if (neighbour.equals(answer_board)) {
+        console.log("We have a winner!");
+        console.log(neighbour);
+        process.exit(0);
+      }
+      else {
+        queue.enq(neighbour);
+      }
+    });
+    console.log("------------------------------")
+  }
 
 
-  // console.log(queue.size());
+
 
 };
 
+const test1 = new Board("1 0 3 4 5 6 7 2 8", 3);
+const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 
-compute();
+
+compute(test1, answer);
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
-// const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
 // const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
 
 // console.log(test2.neighbours());
