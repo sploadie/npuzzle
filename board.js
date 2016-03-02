@@ -65,14 +65,16 @@ class Board {
         // With either the x or y axis, changes around 0 with neighbour and adds to array
         if (change_points[z][0] == 0) {
           new_string = this.tostring();
-          new_string = new_string.replace(/0/, this.board[index][something + change_points[z][1]]);
+          new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index][something + change_points[z][1]], 0);
+          new_string = new_string.replace("temp", this.board[index][something + change_points[z][1]]);
           array_neighbours.push(new_string);
         }
         else {
           new_string = this.tostring();
-          new_string = new_string.replace(/0/, this.board[index + change_points[z][0]][something]);
+          new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index + change_points[z][0]][something], 0);
+          new_string = new_string.replace("temp", this.board[index + change_points[z][0]][something]);
           array_neighbours.push(new_string);
         }
       }
@@ -118,8 +120,8 @@ var compute = function() {
 // compute();
 const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test1 = new Board("1 2 3 4 5 6 7 0 8", 3);
-// const test2 = new Board("8 1 3 4 5 6 7 2 0", 3);
+const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
 
-// console.log(test2.neighbours());
+console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
