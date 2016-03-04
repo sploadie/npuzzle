@@ -28,6 +28,10 @@ class Board {
 		return(this.board);
 	}
 
+  board_size () {
+    return(this.board_size);
+  }
+
   moves () {
     return(this.moves);
   }
@@ -96,7 +100,7 @@ class Board {
           new_string = new_string.trim();
           // Checks if new neighbour is the same as the previous move
           if (this.previous_move != new_string) {
-            array_neighbours.push(new Board(new_string, 4, (this.moves + 1), this.tostring()));
+            array_neighbours.push(new Board(new_string, this.board_size, (this.moves + 1), this.tostring()));
           }
         }
         else {
@@ -108,7 +112,7 @@ class Board {
           new_string = new_string.trim();
           // Checks if new neighbour is the same as the previous move
           if (this.previous_move != new_string) {
-            array_neighbours.push(new Board(new_string, 4, (this.moves + 1), this.tostring()));
+            array_neighbours.push(new Board(new_string, this.board_size, (this.moves + 1), this.tostring()));
           }
         }
       }
@@ -133,12 +137,52 @@ class Board {
 		string = string.replace(/,/g, " ");
 		return(string);
 	}
+
+  unsolvable() {
+    var inversions = 0;
+    var row = 0;
+    var array = this.tostring().split(" ");
+    // Removing 0 from array
+    for (var i = array.length - 1; i >= 0; i--) {
+      if (array[i] === '0') {
+        row = Math.floor(i / this.board_size);
+        array.splice(i, 1);
+      }
+    }
+
+    for (var x = 0; x < array.length; x++) {
+      for (var y = x + 1; y < array.length; y++) {
+        if (parseInt(array[x]) > parseInt(array[y])) {
+          inversions++;
+        }
+      }
+    }
+    // If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
+    // Returning 1 for unsolvable
+    if ((this.board_size % 2) == 1) {
+      return (inversions % 2)
+    }
+    else {
+      if ((inversions + row) % 2 == 1) {
+        return (0);
+      }
+      else {
+        return (1);
+      }
+    }
+
+  }
 };
 
 
 var compute = function(initial_board, answer_board) {
 
   // FIXME: check if initial board is answer
+  if (initial_board.unsolvable() == 1) {
+        console.error("This puzzle cannot be solved. Infinite loop cancelled.");
+        process.exit(1);
+    }
+
   // Hamming priority function
   // var queue = new PriorityQueue(function(a, b) {
   //   return (b.hamming_distance() + b.moves) - (a.hamming_distance() + a.moves);
@@ -173,12 +217,14 @@ var compute = function(initial_board, answer_board) {
 
 
 };
-
 // const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
-const test1  = new Board("1 9 5 3 7 0 2 6 10 8 12 11 13 14 15 4", 4, 0, 0);
+
+// const test1  = new Board("2 4 3 5 0 6 7 8 9 10 11 13 1 14 15 12", 4, 0, 0);
+const test1  = new Board("1 2 3 4 5 6 0 8 9 10 7 11 13 14 15 12", 4, 0, 0);
+// const test1  = new Board("1 2 3 4 6 7 8 5 0", 3, 0, 0);
 const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
 
-
+// test1.unsolvable();
 compute(test1, answer);
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
@@ -186,7 +232,6 @@ compute(test1, answer);
 // console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
-
 
 
 
