@@ -28,6 +28,24 @@ class Board {
 		return(this.board);
 	}
 
+  moves () {
+    return(this.moves);
+  }
+
+  hamming_distance () {
+    var distance = 0;
+    for (var z = 0; z < (Math.pow(this.board_size, 2) - 1); z++) {
+      if (this.board[Math.floor(z / this.board_size)][z % this.board_size] != (z + 1)) {
+        distance++;
+      }
+    }
+    z += 1;
+    if (this.board[this.board_size - 1][this.board_size - 1] != 0) {
+      distance++;
+    }
+    return distance;
+  }
+
 	manhattan_distance () {
 		var sum = 0;
     var x = 0;
@@ -70,21 +88,27 @@ class Board {
       if ((change_points[z][0] + index >= 0 && change_points[z][0] + index < this.board_size) && (change_points[z][1] + something >= 0 && change_points[z][1] + something < this.board_size)) {
         // With either the x or y axis, changes around 0 with neighbour and adds to array
         if (change_points[z][0] == 0) {
-          new_string = this.tostring();
-          new_string = new_string.replace(/0/, "temp");
-          new_string = new_string.replace(this.board[index][something + change_points[z][1]], 0);
+          new_string = " " + this.tostring() + " ";
+          new_string = new_string.replace(/[\s]0[\s]/, " temp ");
+          var regex = new RegExp("[\\s]" + this.board[index][something + change_points[z][1]] + "[\\s]");
+          new_string = new_string.replace(regex, " 0 ");
           new_string = new_string.replace("temp", this.board[index][something + change_points[z][1]]);
+          new_string = new_string.trim();
+          // Checks if new neighbour is the same as the previous move
           if (this.previous_move != new_string) {
-            array_neighbours.push(new Board(new_string, 3, (this.moves + 1), this.tostring()));
+            array_neighbours.push(new Board(new_string, 4, (this.moves + 1), this.tostring()));
           }
         }
         else {
-          new_string = this.tostring();
-          new_string = new_string.replace(/0/, "temp");
-          new_string = new_string.replace(this.board[index + change_points[z][0]][something], 0);
+          new_string = " " + this.tostring() + " ";
+          new_string = new_string.replace(/[\s]0[\s]/, " temp ");
+          var regex = new RegExp("[\\s]" + this.board[index + change_points[z][0]][something] + "[\\s]");
+          new_string = new_string.replace(regex, " 0 ");
           new_string = new_string.replace("temp", this.board[index + change_points[z][0]][something]);
+          new_string = new_string.trim();
+          // Checks if new neighbour is the same as the previous move
           if (this.previous_move != new_string) {
-            array_neighbours.push(new Board(new_string, 3, (this.moves + 1), this.tostring()));
+            array_neighbours.push(new Board(new_string, 4, (this.moves + 1), this.tostring()));
           }
         }
       }
@@ -115,16 +139,22 @@ class Board {
 var compute = function(initial_board, answer_board) {
 
   // FIXME: check if initial board is answer
+  // Hamming priority function
+  // var queue = new PriorityQueue(function(a, b) {
+  //   return (b.hamming_distance() + b.moves) - (a.hamming_distance() + a.moves);
+  // });
+
+  // Manhattan priority function
   var queue = new PriorityQueue(function(a, b) {
-    return b.manhattan_distance() - a.manhattan_distance();
+    return (b.manhattan_distance() + b.moves) - (a.manhattan_distance() + a.moves);
   });
 
   var answer = 0;
   queue.enq(initial_board);
-  while (answer != 1) {
+  while (answer != -1) {
     var current_board = queue.deq();
     var neighbours = current_board.neighbours();
-    console.log(current_board);
+    // console.log(current_board);
 
     neighbours.forEach(function(neighbour) {
       if (neighbour.equals(answer_board)) {
@@ -136,7 +166,7 @@ var compute = function(initial_board, answer_board) {
         queue.enq(neighbour);
       }
     });
-    console.log("------------------------------")
+    // console.log("------------------------------")
   }
 
 
@@ -144,8 +174,10 @@ var compute = function(initial_board, answer_board) {
 
 };
 
-const test1 = new Board("1 8 2 0 4 3 7 6 5", 3, 0, 0);
-const answer = new Board("1 2 3 4 5 6 7 8 0", 3, 0, 0);
+// const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
+const test1  = new Board("1 9 5 3 7 0 2 6 10 8 12 11 13 14 15 4", 4, 0, 0);
+const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
+
 
 compute(test1, answer);
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
