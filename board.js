@@ -5,9 +5,11 @@ var PriorityQueue = require('priorityqueuejs');
 
 
 class Board {
-	constructor (str, board_size) {
+	constructor (str, board_size, moves, previous_move) {
 		this.board = [];
 		this.board_size = board_size;
+    this.moves = moves;
+    this.previous_move = previous_move;
 
 		// places board_size arrays into board
 		_.times(this.board_size, () => {
@@ -72,14 +74,18 @@ class Board {
           new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index][something + change_points[z][1]], 0);
           new_string = new_string.replace("temp", this.board[index][something + change_points[z][1]]);
-          array_neighbours.push(new Board(new_string, 3));
+          if (this.previous_move != new_string) {
+            array_neighbours.push(new Board(new_string, 3, (this.moves + 1), this.tostring()));
+          }
         }
         else {
           new_string = this.tostring();
           new_string = new_string.replace(/0/, "temp");
           new_string = new_string.replace(this.board[index + change_points[z][0]][something], 0);
           new_string = new_string.replace("temp", this.board[index + change_points[z][0]][something]);
-          array_neighbours.push(new Board(new_string, 3));
+          if (this.previous_move != new_string) {
+            array_neighbours.push(new Board(new_string, 3, (this.moves + 1), this.tostring()));
+          }
         }
       }
     }
@@ -87,7 +93,7 @@ class Board {
   }
 
 	equals (otherBoard) {
-		if (this.tostring(this.board_size) === otherBoard.tostring(this.board_size)) {
+		if (this.tostring() === otherBoard.tostring()) {
 			return true;
 		}
 		return false;
@@ -138,9 +144,8 @@ var compute = function(initial_board, answer_board) {
 
 };
 
-const test1 = new Board("1 0 3 4 5 6 7 2 8", 3);
-const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
-
+const test1 = new Board("1 8 2 0 4 3 7 6 5", 3, 0, 0);
+const answer = new Board("1 2 3 4 5 6 7 8 0", 3, 0, 0);
 
 compute(test1, answer);
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
