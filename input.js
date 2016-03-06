@@ -1,8 +1,8 @@
-"use strict"; // so that we can do fun es6 things
+// "use strict"; // so that we can do fun es6 things
 
-require("./board.js");
+var engine = require("./board.js");
 
-console.log("Board:", Board);
+// console.log("Board:", engine.board);
 
 var readfile = function(filename)	{
 	var fs = require("fs");
@@ -55,6 +55,8 @@ var parse = function(argv) {
 
 	console.log(n);
 	console.log(npuzzle);
+	// engine.compute(test1, answer, "manhattan_distance");
+
 };
 
 parse(process.argv);
