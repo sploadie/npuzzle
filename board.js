@@ -236,11 +236,19 @@ function compute (initial_board, answer_board, heuristic) {
 
 };
 // const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
+// const test1  = new Board("1 2 3 8 0 4 7 6 5", 3, 0, 0);
+// const test1  = new Board("1 2 3 4 12 13 14 5 11 0 15 6 10 9 8 7", 4, 0, 0);
+// const test1  = new Board("1 2 3 4 5 16 17 18 19 6 15 24 0 20 7 14 23 22 21 8 13 12 11 10 9", 5, 0, 0);
+
+const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
+// const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
 
 // const test1  = new Board("2 4 3 5 0 6 7 8 9 10 11 13 1 14 15 12", 4, 0, 0);
-const test1  = new Board("1 2 3 4 5 6 0 8 9 10 7 11 13 14 15 12", 4, 0, 0);
-// const test1  = new Board("1 2 3 4 6 7 8 5 0", 3, 0, 0);
-const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
+// const test1  = new Board("1 2 3 4 5 6 0 8 9 10 7 11 13 14 15 12", 4, 0, 0);
+// const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
+// const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
+const answer = new Board("1 2 3 4 5 6 7 8 0", 3, 0, 0);
+// const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 19 20 21 22 23 24 0", 5, 0, 0);
 
 // test1.unsolvable();
 compute(test1, answer, "manhattan_distance");
