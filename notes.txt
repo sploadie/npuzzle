@@ -6,5 +6,10 @@ We should have a snarky message for this case.
 
 We should also have a snarky message for when there are multiple of a number.
 
-Read this when you're confused about `() => {}` syntax
+Read this when you're confused about `() => {}` syntax:
 https://github.com/babel/babel.github.io/blob/master/docs/learn-es6.md#arrows-and-lexical-this
+
+
+
+TODO:
+- make sure we're solving for 42's answer (not canonical order)

@@ -19,9 +19,8 @@ class Board {
 		// puts boardSize values into each array, converts them to integers
 		let split = str.split(" ");
 		for (let index = 0; index < split.length; index++) {
- 	 		this.board[Math.floor(index / board_size)].push(parseInt(split[index], 10));
+			this.board[Math.floor(index / board_size)].push(parseInt(split[index], 10));
 		}
-    this.distance = this.manhattan_distance();
 	}
 
 	board () {
@@ -37,6 +36,10 @@ class Board {
   }
 
   hamming_distance () {
+		if (this.hamming_distance_cached) {
+			return this.hamming_distance_cached;
+		}
+
     var distance = 0;
     for (var z = 0; z < (Math.pow(this.board_size, 2) - 1); z++) {
       if (this.board[Math.floor(z / this.board_size)][z % this.board_size] != (z + 1)) {
@@ -47,15 +50,21 @@ class Board {
     if (this.board[this.board_size - 1][this.board_size - 1] != 0) {
       distance++;
     }
+
+		this.hamming_distance_cached = distance;
     return distance;
   }
 
 	manhattan_distance () {
+		if (this.manhattan_distance_cached) {
+			return this.manhattan_distance_cached;
+		}
+
 		var sum = 0;
     var x = 0;
     var y = 0;
 		for (var index = 0; index < this.board_size; index++) {
- 	 		for (var something = 0; something < this.board_size; something++) {
+			for (var something = 0; something < this.board_size; something++) {
         if (this.board[index][something] == 0) {
           x = Math.abs(index - (this.board_size - 1));
           y = Math.abs(something - (this.board_size - 1));
@@ -68,14 +77,16 @@ class Board {
         sum += x + y
 			}
 		}
+
+		this.manhattan_distance_cached = sum;
     return sum;
 	}
 
-  // Yes, that is the correct spelling
-	// Fine.
   neighbours () {
     var array_neighbours = [];
+
     // find where 0 is
+		// XXX: can we cache this?
     loop1:
       for (var index = 0; index < this.board_size; index++) {
     loop2:
@@ -87,9 +98,12 @@ class Board {
       }
     var change_points = [[1, 0], [0, 1], [-1, 0], [0, -1]];
     var new_string = "";
-    // First checks if the new point would still be within the boundaries of the game
     for (var z = 0; z < change_points.length; z++) {
-      if ((change_points[z][0] + index >= 0 && change_points[z][0] + index < this.board_size) && (change_points[z][1] + something >= 0 && change_points[z][1] + something < this.board_size)) {
+			// checks if the new point would still be within the boundaries of the game
+      if ((change_points[z][0] + index >= 0 &&
+							change_points[z][0] + index < this.board_size) &&
+					(change_points[z][1] + something >= 0 &&
+							change_points[z][1] + something < this.board_size)) {
         // With either the x or y axis, changes around 0 with neighbour and adds to array
         if (change_points[z][0] == 0) {
           new_string = " " + this.tostring() + " ";
@@ -131,7 +145,7 @@ class Board {
 		var string = [];
 		// turns array of arrays into an array
 		for (var index = 0; index < Math.pow(this.board_size, 2); index++) {
- 	 		string.push(this.board[Math.floor(index / this.board_size)][index % this.board_size]);
+			string.push(this.board[Math.floor(index / this.board_size)][index % this.board_size]);
 		}
 		string = string.toString();
 		string = string.replace(/,/g, " ");
@@ -170,12 +184,11 @@ class Board {
         return (1);
       }
     }
-
   }
 };
 
 
-var compute = function(initial_board, answer_board) {
+function compute (initial_board, answer_board, heuristic) {
 
   // FIXME: check if initial board is answer
   if (initial_board.unsolvable() == 1) {
@@ -183,19 +196,26 @@ var compute = function(initial_board, answer_board) {
         process.exit(1);
     }
 
-  // Hamming priority function
-  // var queue = new PriorityQueue(function(a, b) {
-  //   return (b.hamming_distance() + b.moves) - (a.hamming_distance() + a.moves);
-  // });
-
-  // Manhattan priority function
-  var queue = new PriorityQueue(function(a, b) {
-    return (b.manhattan_distance() + b.moves) - (a.manhattan_distance() + a.moves);
+	// set up heuristic
+	if (!initial_board[heuristic]) {
+		throw new Error("invalid heuristic function name");
+	}
+	// options: ["manhattan_distance", "hamming_distance"]
+	var queue = new PriorityQueue(function(a, b) {
+    return (b[heuristic]() + b.moves) - (a[heuristic]() + a.moves);
   });
 
-  var answer = 0;
+	// keep some statistics
+	let max_states_openned = 0;
+	let max_states_in_memory = 0;
+
   queue.enq(initial_board);
-  while (answer != -1) {
+  while (true) {
+		const size_now = queue.size();
+		if (size_now > max_states_in_memory) {
+			max_states_in_memory = size_now;
+		}
+
     var current_board = queue.deq();
     var neighbours = current_board.neighbours();
     // console.log(current_board);
@@ -205,15 +225,13 @@ var compute = function(initial_board, answer_board) {
         console.log("We have a winner!");
         console.log(neighbour);
         process.exit(0);
-      }
-      else {
+      } else {
+				max_states_openned++;
         queue.enq(neighbour);
       }
     });
     // console.log("------------------------------")
   }
-
-
 
 
 };
@@ -225,21 +243,10 @@ const test1  = new Board("1 2 3 4 5 6 0 8 9 10 7 11 13 14 15 12", 4, 0, 0);
 const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
 
 // test1.unsolvable();
-compute(test1, answer);
+compute(test1, answer, "manhattan_distance");
 // const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
 // const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
 
 // console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
-
-
-
-
-
-
-
-
-
-
-
