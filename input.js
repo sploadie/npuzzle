@@ -1,6 +1,8 @@
 "use strict"; // so that we can do fun es6 things
 
-import "board";
+require("./board.js");
+
+console.log("Board:", Board);
 
 var readfile = function(filename)	{
 	var fs = require("fs");
@@ -18,9 +20,9 @@ var parse = function(argv) {
 		console.log("One file please: no more, no less.");
 		process.exit(1);
 	}
-	var data = readfile(argv[2]);	
+	var data = readfile(argv[2]);
 	var split_data = data.split("\n");
-	
+
 	// Removes comments from file
  	var array_no_comments = split_data.map(function(num) {
   	if (!num) {
@@ -39,7 +41,7 @@ var parse = function(argv) {
 	    	array_no_comments.splice(i, 1);
 	    }
 	}
-  	
+
   	console.log(array_no_comments);
  	var n       = array_no_comments.shift();
  	var npuzzle = array_no_comments;

@@ -3,6 +3,8 @@
 var _             = require('underscore');
 var PriorityQueue = require('priorityqueuejs');
 
+// declare up here so that we're saving on memory
+var change_points = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
 class Board {
 	constructor (str, board_size, moves, previous_move) {
@@ -82,6 +84,8 @@ class Board {
     return sum;
 	}
 
+
+
   neighbours () {
     var array_neighbours = [];
 
@@ -96,7 +100,7 @@ class Board {
           }
         }
       }
-    var change_points = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+
     var new_string = "";
     for (var z = 0; z < change_points.length; z++) {
 			// checks if the new point would still be within the boundaries of the game
@@ -258,3 +262,9 @@ compute(test1, answer, "manhattan_distance");
 // console.log(test2.neighbours());
 // console.log(test2.tostring());
 // console.log(test0.equals(test1));
+
+
+module.exports = {
+  Board,
+	compute,
+};
