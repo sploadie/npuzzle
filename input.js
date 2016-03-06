@@ -1,4 +1,4 @@
-// "use strict"; // so that we can do fun es6 things
+"use strict"; // so that we can do fun es6 things
 
 var engine = require("./board.js");
 
@@ -7,7 +7,7 @@ var engine = require("./board.js");
 var readfile = function(filename)	{
 	var fs = require("fs");
 	try {
-	  data = fs.readFileSync(filename,'utf8');
+	  var data = fs.readFileSync(filename,'utf8');
 	} catch (e) {
 	  	console.error("File can't be read, we blame you.");
 	  	process.exit(1);
