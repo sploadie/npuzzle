@@ -42,7 +42,6 @@ class Board {
 			_.times(this.board_size, (value) => {
 				this.answer_map[value] = new Array(this.board_size);
 			});
-
 			// do the hard work
 			let curr_move_index = 0;
 			let row = 0;
@@ -387,6 +386,6 @@ module.exports = {
 	compute,
 };
 
-new Board([[1, 2], [3, 0]]);
-new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+// new Board([[1, 2], [3, 0]]);
+// new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
 new Board([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]);

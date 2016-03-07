@@ -1,8 +1,6 @@
 "use strict"; // so that we can do fun es6 things
 
-// var engine = require("./board.js");
-
-// console.log("Board:", engine.board);
+var engine = require("./board.js");
 
 var readfile = function(filename)	{
 	var fs = require("fs");
@@ -104,9 +102,9 @@ var parse = function(argv) {
  	var npuzzle = convert_integer(array_no_comments, n);
 
   check_number_sequence(npuzzle, n);
-	// console.log(n);
-	// console.log(npuzzle);
-	// engine.compute(test1, answer, "manhattan_distance");
+	console.log(n);
+	console.log(npuzzle);
+	engine.compute(npuzzle);
 
 };
 
