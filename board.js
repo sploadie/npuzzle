@@ -89,6 +89,10 @@ class Board {
 
 		if (zero_tile) {
 			this.zero_tile = zero_tile;
+
+			if (this.board_array[this.zero_tile.row][this.zero_tile.col] !== 0) {
+				throw new Error("zero tile not zero");
+			}
 		} else {
 			// find where 0 is
 	    findZeroLoop: for (var row = 0; row < this.board_size; row++) {
