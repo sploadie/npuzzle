@@ -236,7 +236,14 @@ class Board {
 			let new_moves = this.moves.slice(0);
 			new_moves.push(curr_move);
 
-			neighbours_array.push(new Board(new_board_array, new_moves));
+			// set up the new zero tile
+			const new_zero_tile = {
+				row: row + curr_move.row_delta,
+				col: col + curr_move.col_delta,
+			};
+
+			neighbours_array.push(new Board(new_board_array, new_moves,
+					this.answer_map, new_zero_tile));
     });
 
     return(neighbours_array);
