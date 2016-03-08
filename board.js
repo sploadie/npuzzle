@@ -6,10 +6,10 @@ const PriorityQueue = require('priorityqueuejs');
 // declare up here so that we're saving on memory
 // order is right, down, left, up (needed for computing answer_array)
 const possible_moves = [
-	{ row_delta: 1, col_delta: 0 },
 	{ row_delta: 0, col_delta: 1 },
-	{ row_delta: -1, col_delta: 0 },
+	{ row_delta: 1, col_delta: 0 },
 	{ row_delta: 0, col_delta: -1 },
+	{ row_delta: -1, col_delta: 0 },
 ];
 
 class Board {
@@ -19,7 +19,8 @@ class Board {
 		this.board_size = board_array.length;
 
 		// just in case
-		console.log("this.board_array:", this.board_array);
+    console.log("this.board_array:")
+		console.log(this.board_array);
 		_.each(this.board_array, (row) => {
 			if (row.length !== this.board_size) {
 				console.log("row:", row);
@@ -53,7 +54,6 @@ class Board {
 			for (let number = 1; number < Math.pow(this.board_size, 2); number++) {
 				// set the current number
 				this.answer_map[number] = { row, col };
-
 				// if we're going to hit an edge or previously set numbers, turn
 				if (path_index === before_turning) {
 					// turn right once
@@ -160,17 +160,17 @@ class Board {
 		var sum = 0;
     var x = 0;
     var y = 0;
-		for (var index = 0; index < this.board_size; index++) {
-			for (var something = 0; something < this.board_size; something++) {
-        if (this.board_array[index][something] === 0) {
-          x = Math.abs(index - (this.board_size - 1));
-          y = Math.abs(something - (this.board_size - 1));
-        }
-        else {
-          // the formula is where you need to go minus current position, x,y both calculate distance between where we are now and where they need to go
-          x = Math.abs(index - Math.floor(((this.board_array[index][something] - 1 )/ this.board_size)));
-          y = Math.abs(something - Math.floor(((this.board_array[index][something] - 1 ) % this.board_size)));
-        }
+		for (var row = 0; row < this.board_size; row++) {
+			for (var column = 0; column < this.board_size; column++) {
+        console.log("---------------");
+        console.log(this.board_array[row][column]);
+        console.log(row + " " + column);
+        // the formula is where you need to go minus current position, x,y both calculate distance between where we are now and where they need to go
+        console.log(this.answer_map[this.board_array[row][column]]["row"] + " " + this.answer_map[this.board_array[row][column]]["col"]);
+
+
+        x = Math.abs(row - Math.floor(((this.board_array[row][column] - 1 )/ this.board_size)));
+        y = Math.abs(column - Math.floor(((this.board_array[row][column] - 1 ) % this.board_size)));
         sum += x + y;
 			}
 		}
@@ -388,4 +388,6 @@ module.exports = {
 
 // new Board([[1, 2], [3, 0]]);
 // new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
-new Board([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 0]]);
+var hello = new Board([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 4], [13, 14, 12, 15]]);
+console.log(hello.manhattan_distance());
+
