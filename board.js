@@ -279,7 +279,13 @@ class Board {
   unsolvable() {
     var inversions = 0;
     var row = 0;
-    var array = this.toString().split(" ");
+    // var array = this.toString().split(" ");
+    // remove this shit
+    // var array = "0 1 6 2 4 8 3 7 5".split(" "); 
+    // var array = "6 2 0 4 1 7 5 3 8".split(" ");
+
+   
+
     // Removing 0 from array
     for (var i = array.length - 1; i >= 0; i--) {
       if (array[i] === '0') {
@@ -297,6 +303,8 @@ class Board {
     }
     // If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
     // Returning 1 for unsolvable
+    console.log(inversions);
+    console.log(this.board_size % 2);
     if ((this.board_size % 2) == 1) {
       return (inversions % 2);
     }
@@ -330,6 +338,8 @@ function compute (initial_array, heuristic) {
         console.error("This puzzle cannot be solved. Infinite loop cancelled.");
         process.exit(1);
   }
+  console.log("Noope");
+  process.exit(0);    
 
 	// set up heuristic
 	// if (!initial_board[heuristic]) {
@@ -402,8 +412,15 @@ module.exports = {
 	compute,
 };
 
-new Board([[1, 2], [3, 0]]);
-var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
-var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
-var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
+// new Board([[1, 2], [3, 0]]);
+// var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
+// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
 // compute(hello, 0);
+// new Board([[1, 2], [3, 0]]);
+var hello = [[6, 2, 0], [4, 1, 7], [5, 3, 8]];
+// var hello = [[1, 2, 3], [0, 8, 4], [7, 6, 5]];
+// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
+compute(hello, 0);
+
