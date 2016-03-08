@@ -131,6 +131,7 @@ class Board {
 			if (!this.zero_tile) {
 				throw new Error("couldn't find zero tile");
 			}
+
 		}
 
 		// // places board_size arrays into board
@@ -178,9 +179,9 @@ class Board {
   }
 
 	manhattan_distance () {
-		if (this.manhattan_distance_cached) {
-			return this.manhattan_distance_cached;
-		}
+  		if (this.manhattan_distance_cached) {
+  			return this.manhattan_distance_cached;
+  		}
 
 		var sum = 0;
     var x = 0;
@@ -338,7 +339,7 @@ function compute (initial_array, heuristic) {
 	// }
 	// options: ["manhattan_distance", "hamming_distance"]
 	var queue = new PriorityQueue(function(a, b) {
-    return (b["manhattan_distance"]() + b.moves) - (a["manhattan_distance"]() + a.moves);
+    return (b["manhattan_distance"]() + b.get_moves().length) - (a["manhattan_distance"]() + a.get_moves().length);
   });
 
 	// keep some statistics
@@ -364,6 +365,7 @@ function compute (initial_array, heuristic) {
         console.log("Max States In Memory: " + max_states_in_memory);
         process.exit(0);
       } else {
+        // console.log(neighbour.manhattan_distance());
 				max_states_opened++;
         queue.enq(neighbour);
       }
@@ -413,5 +415,6 @@ module.exports = {
 // var hello = [[1, 2, 3], [0, 8, 4], [7, 6, 5]];
 // var hello = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
 // var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
+// hello.neighbours();
 // compute(hello, 0);
 

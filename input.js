@@ -102,8 +102,8 @@ var parse = function(argv) {
  	var npuzzle = convert_integer(array_no_comments, n);
 
   check_number_sequence(npuzzle, n);
-	// console.log(n);
-	// console.log(npuzzle);
+	console.log(n);
+	console.log(npuzzle);
 	engine.compute(npuzzle);
 
 };
