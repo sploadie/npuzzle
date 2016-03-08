@@ -19,15 +19,15 @@ class Board {
 		this.board_size = board_array.length;
 
 		// just in case
-    console.log("this.board_array:")
-		console.log(this.board_array);
-		_.each(this.board_array, (row) => {
-			if (row.length !== this.board_size) {
-				console.log("row:", row);
-				console.log("this.board_size:", this.board_size);
-				throw new Error("not a square");
-			}
-		});
+  //   console.log("this.board_array:")
+		// console.log(this.board_array);
+		// _.each(this.board_array, (row) => {
+		// 	if (row.length !== this.board_size) {
+		// 		console.log("row:", row);
+		// 		console.log("this.board_size:", this.board_size);
+		// 		throw new Error("not a square");
+		// 	}
+		// });
 
 		if (moves) {
 			this.moves = moves;
@@ -80,15 +80,14 @@ class Board {
 			// set the 0 (we already moved so we're in the right place)
 			this.answer_map[0] = { row, col };
 
-			console.log("answer_map:");
-			_.each(this.answer_map, (value, number) => {
-				console.log("number, value:", number, value);
-			});
+			// console.log("answer_map:");
+			// _.each(this.answer_map, (value, number) => {
+			// 	console.log("number, value:", number, value);
+			// });
 		}
 
 		if (zero_tile) {
 			this.zero_tile = zero_tile;
-
 			if (this.board_array[this.zero_tile.row][this.zero_tile.col] !== 0) {
 				throw new Error("zero tile not zero");
 			}
@@ -162,19 +161,12 @@ class Board {
     var y = 0;
 		for (var row = 0; row < this.board_size; row++) {
 			for (var column = 0; column < this.board_size; column++) {
-        console.log("---------------");
-        console.log(this.board_array[row][column]);
-        console.log(row + " " + column);
-        // the formula is where you need to go minus current position, x,y both calculate distance between where we are now and where they need to go
-        console.log(this.answer_map[this.board_array[row][column]]["row"] + " " + this.answer_map[this.board_array[row][column]]["col"]);
-
-
-        x = Math.abs(row - Math.floor(((this.board_array[row][column] - 1 )/ this.board_size)));
-        y = Math.abs(column - Math.floor(((this.board_array[row][column] - 1 ) % this.board_size)));
+        // row - answer[current_number][row/col]
+        x = Math.abs(row - this.answer_map[this.board_array[row][column]].row);
+        y = Math.abs(column - this.answer_map[this.board_array[row][column]].col);
         sum += x + y;
 			}
 		}
-
 		this.manhattan_distance_cached = sum;
     return sum;
 	}
@@ -184,7 +176,6 @@ class Board {
 
 		const zero_row = this.zero_tile.row;
 		const zero_col = this.zero_tile.col;
-
 
     _.each(possible_moves, (curr_move) => {
 			// don't check if the previous move was the opposite
@@ -197,14 +188,13 @@ class Board {
       if (curr_move.row_delta + zero_row < 0 ||
 					curr_move.row_delta + zero_row >= this.board_size ||
 					curr_move.col_delta + zero_col < 0 ||
-					curr_move.col_delta + zero_col < this.board_size) {
+					curr_move.col_delta + zero_col >= this.board_size) {
 				return;
 			}
 
 			// reduce memory as much as possible by reusing the old board's
 			// board_array as much as possible
-			let new_board_array = this.board_array;
-
+			let new_board_array = this.board_array.slice();
       // with either the x or y axis, changes around the 0 tile for the naybour
       if (curr_move.row_delta === 0) { // horizontal move
 				// create a copy of the old board's one line
@@ -224,16 +214,15 @@ class Board {
 				const dest_line_index = zero_row + curr_move.row_delta;
 				let zero_line = this.board_array[zero_row].slice(0);
 				let dest_line = this.board_array[dest_line_index].slice(0);
-
 				// do the swap
 				const temp = zero_line[zero_col];
 				zero_line[zero_col] = dest_line[zero_col];
 				dest_line[zero_col] = temp;
-
 				// swap out those changed lines in the board array
 				new_board_array[zero_row] = zero_line;
 				new_board_array[dest_line_index] = dest_line;
       }
+
 
 			// create a shallow copy of the moves array for the neighbore
 			let new_moves = this.moves.slice(0);
@@ -241,10 +230,9 @@ class Board {
 
 			// set up the new zero tile
 			const new_zero_tile = {
-				row: row + curr_move.row_delta,
-				col: col + curr_move.col_delta,
+				row: zero_row + curr_move.row_delta,
+				col: zero_col + curr_move.col_delta,
 			};
-
 			neighbours_array.push(new Board(new_board_array, new_moves,
 					this.answer_map, new_zero_tile));
     });
@@ -311,25 +299,30 @@ class Board {
 }
 
 
-function compute (initial_board, heuristic) {
+function compute (initial_array, heuristic) {
+  var initial_board = new Board(initial_array);
 
   // FIXME: check if initial board is answer
+  if (initial_board.solved()) {
+    console.log("This one was solved before we even began trying - we're going to be honest and take no credit for this one.");
+    process.exit(0);    
+  }
   if (initial_board.unsolvable() == 1) {
         console.error("This puzzle cannot be solved. Infinite loop cancelled.");
         process.exit(1);
-    }
+  }
 
 	// set up heuristic
-	if (!initial_board[heuristic]) {
-		throw new Error("invalid heuristic function name");
-	}
+	// if (!initial_board[heuristic]) {
+	// 	throw new Error("invalid heuristic function name");
+	// }
 	// options: ["manhattan_distance", "hamming_distance"]
 	var queue = new PriorityQueue(function(a, b) {
-    return (b[heuristic]() + b.moves) - (a[heuristic]() + a.moves);
+    return (b["manhattan_distance"]() + b.moves) - (a["manhattan_distance"]() + a.moves);
   });
 
 	// keep some statistics
-	let max_states_openned = 0;
+	let max_states_opened = 0;
 	let max_states_in_memory = 0;
 
   queue.enq(initial_board);
@@ -347,14 +340,18 @@ function compute (initial_board, heuristic) {
       if (neighbour.solved()) {
         console.log("We have a winner!");
         console.log(neighbour);
+        console.log("Max States Opened: " + max_states_opened);
+        console.log("Max States In Memory: " + max_states_in_memory);
         process.exit(0);
       } else {
-				max_states_openned++;
+				max_states_opened++;
         queue.enq(neighbour);
       }
     });
+
     // console.log("------------------------------")
   }
+
 }
 // const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
 // const test1  = new Board("1 2 3 8 0 4 7 6 5", 3, 0, 0);
@@ -387,7 +384,8 @@ module.exports = {
 };
 
 // new Board([[1, 2], [3, 0]]);
-// new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
-var hello = new Board([[1, 2, 3, 0], [5, 6, 7, 8], [9, 10, 11, 4], [13, 14, 12, 15]]);
-console.log(hello.manhattan_distance());
+// var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
+// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
+// compute(hello, 0);
 
