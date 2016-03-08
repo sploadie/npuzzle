@@ -3,6 +3,21 @@
 const _             = require('underscore');
 const PriorityQueue = require('priorityqueuejs');
 
+function map_to_array(map, arraySize) {
+	// initialize array
+	let array = new Array(arraySize);
+	_.times(arraySize, (value) => {
+		array[value] = new Array(arraySize);
+	});
+
+	// set values in array
+	_.each(map, (value, key) => {
+		array[value.row][value.col] = key;
+	});
+
+	return array;
+}
+
 // declare up here so that we're saving on memory
 // order is right, down, left, up (needed for computing answer_array)
 const possible_moves = [
@@ -39,11 +54,6 @@ class Board {
 			this.answer_map = answer_map;
 		} else {
 			// calculate the answer map from scratch
-			this.answer_map = new Array(this.board_size);
-			_.times(this.board_size, (value) => {
-				this.answer_map[value] = new Array(this.board_size);
-			});
-			// do the hard work
 			let curr_move_index = 0;
 			let row = 0;
 			let col = 0;
@@ -51,7 +61,11 @@ class Board {
 			let path_index = 1; // index on the current path (starts at 1)
 			let second_path = true; // before_turning decreases every 2 paths
 
-			for (let number = 1; number < Math.pow(this.board_size, 2); number++) {
+			const map_length = Math.pow(this.board_size, 2);
+			this.answer_map = new Array(map_length);
+
+			// do the hard work
+			for (let number = 1; number < map_length; number++) {
 				// set the current number
 				this.answer_map[number] = { row, col };
 				// if we're going to hit an edge or previously set numbers, turn
@@ -79,6 +93,11 @@ class Board {
 
 			// set the 0 (we already moved so we're in the right place)
 			this.answer_map[0] = { row, col };
+
+			// hi Marco
+			const answer_array = map_to_array(this.answer_map, this.board_size);
+			const flattened = _.flatten(answer_array);
+			console.log("flattened:", flattened);
 
 			// console.log("answer_map:");
 			// _.each(this.answer_map, (value, number) => {
@@ -264,7 +283,7 @@ class Board {
     // Removing 0 from array
     for (var i = array.length - 1; i >= 0; i--) {
       if (array[i] === '0') {
-        row = Math.floor(i / this.board_size);
+        row = Math.floor(i / this.board_size); // technically this.zero.row
         array.splice(i, 1);
       }
     }
@@ -305,7 +324,7 @@ function compute (initial_array, heuristic) {
   // FIXME: check if initial board is answer
   if (initial_board.solved()) {
     console.log("This one was solved before we even began trying - we're going to be honest and take no credit for this one.");
-    process.exit(0);    
+    process.exit(0);
   }
   if (initial_board.unsolvable() == 1) {
         console.error("This puzzle cannot be solved. Infinite loop cancelled.");
@@ -383,9 +402,8 @@ module.exports = {
 	compute,
 };
 
-// new Board([[1, 2], [3, 0]]);
-// var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
-// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
-// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
+new Board([[1, 2], [3, 0]]);
+var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
+var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
 // compute(hello, 0);
-
