@@ -18,6 +18,18 @@ function map_to_array(map, arraySize) {
 	return array;
 }
 
+function inversions(array) {
+  var inversions = 0;
+  for (var x = 0; x < array.length; x++) {
+    for (var y = x + 1; y < array.length; y++) {
+      if (parseInt(array[x]) > parseInt(array[y])) {
+        inversions++;
+      }
+    }
+  }
+  return (inversions);
+}
+
 // declare up here so that we're saving on memory
 // order is right, down, left, up (needed for computing answer_array)
 const possible_moves = [
@@ -93,11 +105,6 @@ class Board {
 
 			// set the 0 (we already moved so we're in the right place)
 			this.answer_map[0] = { row, col };
-
-			// hi Marco
-			const answer_array = map_to_array(this.answer_map, this.board_size);
-			const flattened = _.flatten(answer_array);
-			console.log("flattened:", flattened);
 
 			// console.log("answer_map:");
 			// _.each(this.answer_map, (value, number) => {
@@ -277,14 +284,11 @@ class Board {
 	}
 
   unsolvable() {
-    var inversions = 0;
-    var row = 0;
-    // var array = this.toString().split(" ");
-    // remove this shit
-    // var array = "0 1 6 2 4 8 3 7 5".split(" "); 
-    // var array = "6 2 0 4 1 7 5 3 8".split(" ");
 
-   
+    var row = 0;
+    var array = this.toString().split(" ");
+    var answer_array = map_to_array(this.answer_map, this.board_size);
+    var flattened = _.flatten(answer_array);
 
     // Removing 0 from array
     for (var i = array.length - 1; i >= 0; i--) {
@@ -293,29 +297,18 @@ class Board {
         array.splice(i, 1);
       }
     }
+    // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
+    var goal_inversions = inversions(array);
+    var curr_inversions = inversions(flattened);
 
-    for (var x = 0; x < array.length; x++) {
-      for (var y = x + 1; y < array.length; y++) {
-        if (parseInt(array[x]) > parseInt(array[y])) {
-          inversions++;
-        }
-      }
-    }
     // If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
     // Returning 1 for unsolvable
-    console.log(inversions);
-    console.log(this.board_size % 2);
-    if ((this.board_size % 2) == 1) {
-      return (inversions % 2);
+    if (this.board_size % 2 == 0) { // In this case, the row of the '0' tile matters
+        curr_inversions += array.indexOf(0) / this.board_size;
+        goal_inversions += flattened.indexOf(0) / this.board_size;
     }
-    else {
-      if ((inversions + row) % 2 == 1) {
-        return (0);
-      }
-      else {
-        return (1);
-      }
-    }
+
+    return (curr_inversions % 2 == goal_inversions % 2);
   }
 
 	solved () {
@@ -334,12 +327,10 @@ function compute (initial_array, heuristic) {
     console.log("This one was solved before we even began trying - we're going to be honest and take no credit for this one.");
     process.exit(0);
   }
-  if (initial_board.unsolvable() == 1) {
+  if (!initial_board.unsolvable()) {
         console.error("This puzzle cannot be solved. Infinite loop cancelled.");
         process.exit(1);
   }
-  console.log("Noope");
-  process.exit(0);    
 
 	// set up heuristic
 	// if (!initial_board[heuristic]) {
@@ -418,9 +409,9 @@ module.exports = {
 // var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
 // compute(hello, 0);
 // new Board([[1, 2], [3, 0]]);
-var hello = [[6, 2, 0], [4, 1, 7], [5, 3, 8]];
+// var hello = [[6, 2, 0], [4, 1, 7], [5, 3, 8]];
 // var hello = [[1, 2, 3], [0, 8, 4], [7, 6, 5]];
-// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
+// var hello = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
 // var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
-compute(hello, 0);
+// compute(hello, 0);
 
