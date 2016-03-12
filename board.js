@@ -325,12 +325,13 @@ function compute (initial_array, heuristic) {
 
   // FIXME: check if initial board is answer
   if (initial_board.solved()) {
-    console.log("This one was solved before we even began trying - we're going to be honest and take no credit for this one.");
+    console.log("This one was solved before we even began trying - " +
+				"we're going to be honest and take no credit for this one.");
     process.exit(0);
   }
   if (!initial_board.unsolvable()) {
-        console.error("This puzzle cannot be solved. Infinite loop cancelled.");
-        process.exit(1);
+    console.error("This puzzle cannot be solved. Infinite loop cancelled.");
+    process.exit(1);
   }
 
 	// set up heuristic
@@ -351,11 +352,15 @@ function compute (initial_array, heuristic) {
 		const size_now = queue.size();
 		if (size_now > max_states_in_memory) {
 			max_states_in_memory = size_now;
+			if (max_states_in_memory % 100000 === 0) {
+				console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
+			}
 		}
 
     var current_board = queue.deq();
-    var neighbours = current_board.neighbours();
-    // console.log(current_board);
+		// shuffle nayboorz because otherwise we'll make a disproportionate
+		// number of moves in the same direction
+    var neighbours = _.shuffle(current_board.neighbours());
 
     neighbours.forEach((neighbour) => {
       if (neighbour.solved()) {
@@ -367,6 +372,10 @@ function compute (initial_array, heuristic) {
       } else {
         // console.log(neighbour.manhattan_distance());
 				max_states_opened++;
+				if (max_states_opened % 100000 === 0) {
+					console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
+				}
+
         queue.enq(neighbour);
       }
     });
@@ -417,4 +426,3 @@ module.exports = {
 // var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
 // hello.neighbours();
 // compute(hello, 0);
-
