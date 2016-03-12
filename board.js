@@ -3,31 +3,28 @@
 const _             = require('underscore');
 const PriorityQueue = require('priorityqueuejs');
 
-function map_to_array(map, arraySize) {
+function map_to_array(map, board_size) {
 	// initialize array
-	let array = new Array(arraySize);
-	_.times(arraySize, (value) => {
-		array[value] = new Array(arraySize);
-	});
+	let array = new Array(Math.pow(board_size, 2));
 
 	// set values in array
 	_.each(map, (value, key) => {
-		array[value.row][value.col] = key;
+		array[value.row * board_size + value.col] = key;
 	});
 
 	return array;
 }
 
 function inversions(array) {
-  var inversions = 0;
-  for (var x = 0; x < array.length; x++) {
-    for (var y = x + 1; y < array.length; y++) {
-      if (parseInt(array[x]) > parseInt(array[y])) {
-        inversions++;
-      }
-    }
-  }
-  return (inversions);
+	var inversions = 0;
+	for (var x = 0; x < array.length; x++) {
+		for (var y = x + 1; y < array.length; y++) {
+			if (parseInt(array[x]) > parseInt(array[y])) {
+				inversions++;
+			}
+		}
+	}
+	return (inversions);
 }
 
 // declare up here so that we're saving on memory
@@ -40,21 +37,15 @@ const possible_moves = [
 ];
 
 class Board {
-	constructor (board_array, moves, answer_map, zero_tile) {
-		// NOTE: represented by board_array[row][column]
+	constructor (board_array, board_size, moves, answer_map, zero_tile) {
+		// NOTE: represented by board_array[row * board_size + column]
 		this.board_array = board_array;
-		this.board_size = board_array.length;
+		this.hash = this.board_array.toString();
+		this.board_size = board_size;
 
-		// just in case
-  //   console.log("this.board_array:")
-		// console.log(this.board_array);
-		// _.each(this.board_array, (row) => {
-		// 	if (row.length !== this.board_size) {
-		// 		console.log("row:", row);
-		// 		console.log("this.board_size:", this.board_size);
-		// 		throw new Error("not a square");
-		// 	}
-		// });
+		if (Math.pow(this.board_size, 2) !== board_array.length) {
+			throw new Error("board size does not match board array length");
+		}
 
 		if (moves) {
 			this.moves = moves;
@@ -114,162 +105,135 @@ class Board {
 
 		if (zero_tile) {
 			this.zero_tile = zero_tile;
-			if (this.board_array[this.zero_tile.row][this.zero_tile.col] !== 0) {
+			if (this.board_array[this.zero_tile.row * this.board_size +
+							this.zero_tile.col] !== 0) {
 				throw new Error("zero tile not zero");
 			}
 		} else {
 			// find where 0 is
-	    findZeroLoop: for (var row = 0; row < this.board_size; row++) {
-	      for (var col = 0; col < this.board_size; col++) {
-	        if (!this.board_array[row][col]) {
+			findZeroLoop: for (var row = 0; row < this.board_size; row++) {
+				for (var col = 0; col < this.board_size; col++) {
+					if (!this.board_array[row][col]) {
 						this.zero_tile = { row, col };
-	          break findZeroLoop;
-	        }
-	      }
-	    }
+						break findZeroLoop;
+					}
+				}
+			}
 
 			if (!this.zero_tile) {
 				throw new Error("couldn't find zero tile");
 			}
-
 		}
-
-		// // places board_size arrays into board
-		// _.times(this.board_size, () => {
-		// 	this.board_array.push([]);
-		// });
-		//
-		// // puts board_size values into each array, converts them to integers
-		// let split = str.split(" ");
-		// for (let index = 0; index < split.length; index++) {
-		// 	this.board_array[Math.floor(index / board_size)].push(parseInt(split[index], 10));
-		// }
 	}
 
-	get_board_array () {
-		return(this.board_array);
+	get_hash () {
+		return(this.hash);
 	}
 
-  get_board_size () {
-    return(this.board_size);
-  }
+	get_board_size () {
+		return(this.board_size);
+	}
 
-  get_moves () {
-    return(this.moves);
-  }
+	get_moves () {
+		return(this.moves);
+	}
 
-  hamming_distance () {
+	hamming_distance () {
+		console.log("need to rewrite to use new board_array structure");
 		if (this.hamming_distance_cached) {
 			return this.hamming_distance_cached;
 		}
 
-    var distance = 0;
-    for (var z = 0; z < (Math.pow(this.board_size, 2) - 1); z++) {
-      if (this.board_array[Math.floor(z / this.board_size)][z % this.board_size] != (z + 1)) {
-        distance++;
-      }
-    }
-    z += 1;
-    if (this.board_array[this.board_size - 1][this.board_size - 1] !== 0) {
-      distance++;
-    }
-
-		this.hamming_distance_cached = distance;
-    return distance;
-  }
-
-	manhattan_distance () {
-  		if (this.manhattan_distance_cached) {
-  			return this.manhattan_distance_cached;
-  		}
-
-		var sum = 0;
-    var x = 0;
-    var y = 0;
-		for (var row = 0; row < this.board_size; row++) {
-			for (var column = 0; column < this.board_size; column++) {
-        // row - answer[current_number][row/col]
-        x = Math.abs(row - this.answer_map[this.board_array[row][column]].row);
-        y = Math.abs(column - this.answer_map[this.board_array[row][column]].col);
-        sum += x + y;
+		var distance = 0;
+		for (var z = 0; z < (Math.pow(this.board_size, 2) - 1); z++) {
+			if (this.board_array[Math.floor(z / this.board_size)][z % this.board_size] != (z + 1)) {
+				distance++;
 			}
 		}
-		this.manhattan_distance_cached = sum;
-    return sum;
+		z += 1;
+		if (this.board_array[this.board_size - 1][this.board_size - 1] !== 0) {
+			distance++;
+		}
+
+		this.hamming_distance_cached = distance;
+		return distance;
 	}
 
-  neighbours () {
-    var neighbours_array = [];
+	manhattan_distance () {
+		if (this.manhattan_distance_cached) {
+			return this.manhattan_distance_cached;
+		}
+
+		var sum = 0;
+		var x = 0;
+		var y = 0;
+		let index = 0;
+		for (var row = 0; row < this.board_size; row++) {
+			for (var column = 0; column < this.board_size; column++) {
+				// row - answer[current_number][row/col]
+				x = Math.abs(row - this.answer_map[this.board_array[index]].row);
+				y = Math.abs(column - this.answer_map[this.board_array[index]].col);
+				sum += x + y;
+				index++;
+			}
+		}
+
+		// console.log("this.board_array, sum:", _.flatten(this.board_array), sum);
+
+		this.manhattan_distance_cached = sum;
+		return sum;
+	}
+
+	neighbours () {
+		var neighbours_array = [];
 
 		const zero_row = this.zero_tile.row;
 		const zero_col = this.zero_tile.col;
+		let curr_move;
 
-    _.each(possible_moves, (curr_move) => {
+		for (let curr_move_index in possible_moves) {
+			curr_move = possible_moves[curr_move_index];
+
 			// don't check if the previous move was the opposite
 			if (this.moves.length > 0 &&
-					_.isEqual(curr_move, this.moves[this.moves.length - 1])) {
-				return;
+					curr_move === this.moves[this.moves.length - 1]) {
+				continue;
 			}
 
 			// rejects neighbuor if the move would go out of bounds
-      if (curr_move.row_delta + zero_row < 0 ||
+			if (curr_move.row_delta + zero_row < 0 ||
 					curr_move.row_delta + zero_row >= this.board_size ||
 					curr_move.col_delta + zero_col < 0 ||
 					curr_move.col_delta + zero_col >= this.board_size) {
-				return;
+				continue;
 			}
 
-			// reduce memory as much as possible by reusing the old board's
-			// board_array as much as possible
-			let new_board_array = this.board_array.slice();
-      // with either the x or y axis, changes around the 0 tile for the naybour
-      if (curr_move.row_delta === 0) { // horizontal move
-				// create a copy of the old board's one line
-				let new_line = this.board_array[zero_row].slice(0);
+			let new_zero_tile = {
+				row: zero_row + curr_move.row_delta,
+				col: zero_col + curr_move.col_delta,
+			};
 
-				// do the swap
-				const swap_index = zero_col + curr_move.col_delta;
-				const temp = new_line[zero_col];
-				new_line[zero_col] = new_line[swap_index];
-				new_line[swap_index] = temp;
-
-				// swap out that changed line in the board array
-				new_board_array[zero_row] = new_line;
-      } else { // vertical move
-				// create copies of the old board's zero line and dest_line
-				// (destination for the zero)
-				const dest_line_index = zero_row + curr_move.row_delta;
-				let zero_line = this.board_array[zero_row].slice(0);
-				let dest_line = this.board_array[dest_line_index].slice(0);
-				// do the swap
-				const temp = zero_line[zero_col];
-				zero_line[zero_col] = dest_line[zero_col];
-				dest_line[zero_col] = temp;
-				// swap out those changed lines in the board array
-				new_board_array[zero_row] = zero_line;
-				new_board_array[dest_line_index] = dest_line;
-      }
-
+			let new_board_array = this.board_array.slice(0);
+			let zero_tile_index = zero_row * this.board_size + zero_col;
+			let new_zero_tile_index = new_zero_tile.row * this.board_size +
+					new_zero_tile.col;
+			new_board_array[zero_tile_index] = new_board_array[new_zero_tile_index];
+			new_board_array[new_zero_tile_index] = 0;
 
 			// create a shallow copy of the moves array for the neighbore
 			let new_moves = this.moves.slice(0);
 			new_moves.push(curr_move);
 
-			// set up the new zero tile
-			const new_zero_tile = {
-				row: zero_row + curr_move.row_delta,
-				col: zero_col + curr_move.col_delta,
-			};
-			neighbours_array.push(new Board(new_board_array, new_moves,
-					this.answer_map, new_zero_tile));
-    });
+			neighbours_array.push(new Board(new_board_array, this.board_size,
+					new_moves, this.answer_map, new_zero_tile));
+		};
 
-    return(neighbours_array);
-  }
-
-	equals (otherBoard) {
-		return _.isEqual(this.board_array, otherBoard.get_board_array());
+		return(neighbours_array);
 	}
+
+	// equals (otherBoard) {
+	// 	return _.isEqual(this.board_array, otherBoard.get_board_array());
+	// }
 
 	toString() {
 		// I changed this variable name because it was being highlighted weirdly
@@ -284,49 +248,48 @@ class Board {
 		return(boardString);
 	}
 
-  unsolvable() {
+	unsolvable() {
+		var row = 0;
+		var array = this.board_array;
+		var answer_array = map_to_array(this.answer_map, this.board_size);
 
-    var row = 0;
-    var array = this.toString().split(" ");
-    var answer_array = map_to_array(this.answer_map, this.board_size);
-    var flattened = _.flatten(answer_array);
+		// Removing 0 from array
+		for (var i = array.length - 1; i >= 0; i--) {
+			if (array[i] === '0') {
+				row = Math.floor(i / this.board_size); // technically this.zero.row
+				array.splice(i, 1);
+			}
+		}
+		// Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
+		var goal_inversions = inversions(array);
+		var curr_inversions = inversions(answer_array);
 
-    // Removing 0 from array
-    for (var i = array.length - 1; i >= 0; i--) {
-      if (array[i] === '0') {
-        row = Math.floor(i / this.board_size); // technically this.zero.row
-        array.splice(i, 1);
-      }
-    }
-    // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
-    var goal_inversions = inversions(array);
-    var curr_inversions = inversions(flattened);
+		// If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
+		// Returning 1 for unsolvable
+		if (this.board_size % 2 == 0) { // In this case, the row of the '0' tile matters
+				curr_inversions += array.indexOf(0) / this.board_size;
+				goal_inversions += answer_array.indexOf(0) / this.board_size;
+		}
 
-    // If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
-    // Returning 1 for unsolvable
-    if (this.board_size % 2 == 0) { // In this case, the row of the '0' tile matters
-        curr_inversions += array.indexOf(0) / this.board_size;
-        goal_inversions += flattened.indexOf(0) / this.board_size;
-    }
-
-    return (curr_inversions % 2 == goal_inversions % 2);
-  }
+		return (curr_inversions % 2 == goal_inversions % 2);
+	}
 
 	solved () {
 		return _.every(this.answer_map, (location, number) => {
-			return this.board_array[location.row][location.col] === number;
+			return this.board_array[location.row * this.board_size + location.col]
+					=== number;
 		});
 	}
 }
 
 
 function compute (initial_array, heuristic) {
-  var initial_board = new Board(initial_array);
+  let board_size = parseInt(Math.sqrt(initial_array.length));
+  var initial_board = new Board(initial_array, board_size);
 
-  // FIXME: check if initial board is answer
   if (initial_board.solved()) {
     console.log("This one was solved before we even began trying - " +
-				"we're going to be honest and take no credit for this one.");
+        "we're going to be honest and take no credit for this one.");
     process.exit(0);
   }
   if (!initial_board.unsolvable()) {
@@ -334,55 +297,64 @@ function compute (initial_array, heuristic) {
     process.exit(1);
   }
 
-	// set up heuristic
-	// if (!initial_board[heuristic]) {
-	// 	throw new Error("invalid heuristic function name");
-	// }
-	// options: ["manhattan_distance", "hamming_distance"]
-	var queue = new PriorityQueue(function(a, b) {
+  // set up heuristic
+  if (!initial_board[heuristic] ||
+      ["manhattan_distance", "hamming_distance"].indexOf(heuristic) === -1) {
+    throw new Error("invalid heuristic function name");
+  }
+  // options: ["manhattan_distance", "hamming_distance"]
+  var queue = new PriorityQueue(function(a, b) {
     return (b["manhattan_distance"]() + b.get_moves().length) - (a["manhattan_distance"]() + a.get_moves().length);
   });
 
-	// keep some statistics
-	let max_states_opened = 0;
-	let max_states_in_memory = 0;
+  // keep some statistics
+  let max_states_opened = 0;
+  let max_states_in_memory = 0;
+  let seen_hashes = {};
 
   queue.enq(initial_board);
-  while (true) {
-		const size_now = queue.size();
-		if (size_now > max_states_in_memory) {
-			max_states_in_memory = size_now;
-			if (max_states_in_memory % 100000 === 0) {
-				console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
-			}
-		}
+  while (queue.size() > 0) {
+    const size_now = queue.size();
+    if (size_now > max_states_in_memory) {
+      max_states_in_memory = size_now;
+      if (max_states_in_memory % 100000 === 0) {
+        console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
+      }
+    }
 
     var current_board = queue.deq();
-		// shuffle nayboorz because otherwise we'll make a disproportionate
-		// number of moves in the same direction
+    // shuffle nayboorz because otherwise we'll make a disproportionate
+    // number of moves in the same direction
     var neighbours = _.shuffle(current_board.neighbours());
 
     neighbours.forEach((neighbour) => {
+      let hash = neighbour.get_hash();
+      let moves = neighbour.get_moves();
+      if (seen_hashes[hash] >= moves) {
+        return;
+      }
+      seen_hashes[hash] = moves;
+
       if (neighbour.solved()) {
         console.log("We have a winner!");
         console.log(neighbour);
         console.log("Max States Opened: " + max_states_opened);
         console.log("Max States In Memory: " + max_states_in_memory);
+
         process.exit(0);
-      } else {
-        // console.log(neighbour.manhattan_distance());
-				max_states_opened++;
-				if (max_states_opened % 100000 === 0) {
-					console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
-				}
-
-        queue.enq(neighbour);
+        return;
       }
-    });
 
-    // console.log("------------------------------")
+      max_states_opened++;
+      if (max_states_opened % 100000 === 0) {
+        console.log(`states opened: ${max_states_opened}"\t"max in memory: ${max_states_in_memory}`);
+      }
+
+      queue.enq(neighbour);
+    });
   }
 
+	throw new Error("Couldn't solve :(");
 }
 // const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
 // const test1  = new Board("1 2 3 8 0 4 7 6 5", 3, 0, 0);

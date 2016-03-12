@@ -1,6 +1,5 @@
 function compute (initial_array, heuristic) {
   let board_size = parseInt(Math.sqrt(initial_array.length));
-  console.log("initial_array:", initial_array);
   var initial_board = new Board(initial_array, board_size);
 
   if (initial_board.solved()) {

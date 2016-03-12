@@ -1,6 +1,7 @@
 "use strict"; // so that we can do fun es6 things
 
-var compute = require("./webapp/client/compute.js")
+const _             = require('underscore');
+var engine = require("./board.js")
 
 var readfile = function(filename)	{
 	var fs = require("fs");
@@ -99,12 +100,12 @@ var parse = function(argv) {
   n = +n;
 
   // Converts string to integer values. Also checks if integer values are valid and n length is followed on x,y.
- 	var npuzzle = convert_integer(array_no_comments, n);
+ 	var npuzzle = _.flatten(convert_integer(array_no_comments, n));
 
   check_number_sequence(npuzzle, n);
 	console.log(n);
 	console.log(npuzzle);
-	compute(npuzzle);
+	engine.compute(npuzzle, "manhattan_distance");
 
 };
 
