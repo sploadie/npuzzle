@@ -1,6 +1,6 @@
 "use strict"; // so that we can do fun es6 things
 
-var engine = require("./board.js");
+var compute = require("./webapp/client/compute.js")
 
 var readfile = function(filename)	{
 	var fs = require("fs");
@@ -104,7 +104,7 @@ var parse = function(argv) {
   check_number_sequence(npuzzle, n);
 	console.log(n);
 	console.log(npuzzle);
-	engine.compute(npuzzle);
+	compute(npuzzle);
 
 };
 

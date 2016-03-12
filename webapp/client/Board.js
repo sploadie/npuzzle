@@ -37,6 +37,7 @@ Board = class {
 	constructor (board_array, board_size, moves, answer_map, zero_tile) {
 		// NOTE: represented by board_array[row * board_size + column]
 		this.board_array = board_array;
+		this.hash = this.board_array.toString();
 		this.board_size = board_size;
 
 		if (DEBUG && Math.pow(this.board_size, 2) !== board_array.length) {
@@ -123,8 +124,8 @@ Board = class {
 		}
 	}
 
-	get_board_array () {
-		return(this.board_array);
+	get_hash () {
+		return(this.hash);
 	}
 
 	get_board_size () {
@@ -210,7 +211,7 @@ Board = class {
 				col: zero_col + curr_move.col_delta,
 			};
 
-			let new_board_array = this.board_array.slice();
+			let new_board_array = this.board_array.slice(0);
 			let zero_tile_index = zero_row * this.board_size + zero_col;
 			let new_zero_tile_index = new_zero_tile.row * this.board_size +
 					new_zero_tile.col;
@@ -221,8 +222,6 @@ Board = class {
 			let new_moves = this.moves.slice(0);
 			new_moves.push(curr_move);
 
-			// set up the new zero tile
-
 			neighbours_array.push(new Board(new_board_array, this.board_size,
 					new_moves, this.answer_map, new_zero_tile));
 		};
@@ -230,9 +229,9 @@ Board = class {
 		return(neighbours_array);
 	}
 
-	equals (otherBoard) {
-		return _.isEqual(this.board_array, otherBoard.get_board_array());
-	}
+	// equals (otherBoard) {
+	// 	return _.isEqual(this.board_array, otherBoard.get_board_array());
+	// }
 
 	toString() {
 		// I changed this variable name because it was being highlighted weirdly
