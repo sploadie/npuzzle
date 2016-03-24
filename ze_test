@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "$@"
 if [[ -n "$@" ]]; then
 	ARGS="$@"
 else

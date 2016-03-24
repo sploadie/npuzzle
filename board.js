@@ -306,6 +306,7 @@ class Board {
 function compute (initial_array, heuristic) {
   let board_size = parseInt(Math.sqrt(initial_array.length));
   var initial_board = new Board(initial_array, board_size);
+  console.log('### INITIAL BOARD ###', '\n' + initial_board.toString(), '\n\n### SOLUTION ###');
 
   if (initial_board.solved()) {
     console.log("This one was solved before we even began trying - " +

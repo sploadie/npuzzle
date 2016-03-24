@@ -103,8 +103,9 @@ var parse = function(argv) {
  	var npuzzle = _.flatten(convert_integer(array_no_comments, n));
 
   check_number_sequence(npuzzle, n);
-	console.log(n);
-	console.log(npuzzle);
+  console.log('\n### PARSED INFORMATION ###');
+	console.log('Size:', n);
+  console.log('Puzzle:', npuzzle + '', '\n');
 	engine.compute(npuzzle, "manhattan_distance");
 
 };
