@@ -36,6 +36,12 @@ const possible_moves = [
   { row_delta:  0, col_delta: -1 },
   { row_delta: -1, col_delta:  0 },
 ];
+const human_moves = [
+  'slideLEFT',
+  'slideUP',
+  'slideRIGHT',
+  'slideDOWN',
+];
 
 class Board {
   constructor (board_array, board_size, moves, answer_map, zero_tile) {
@@ -258,6 +264,14 @@ class Board {
     return(boardString.replace(/,/g, ' '));
   }
 
+  movesString() {
+    var moves = 'Move Count: ' + this.moves.length + '\nMoves:\n'
+    moves += this.moves.map(function(move) {
+      return (human_moves[possible_moves.indexOf(move)]);
+    }).join('\n');
+    return (moves);
+  }
+
   isBroken() {
     var board = this.board_array.slice().sort();
     for (var i = 0; i < this.board_size - 1; i++) {
@@ -332,7 +346,7 @@ function compute (initial_array, heuristic) {
   });
 
   // keep some statistics
-  let max_states_opened = 0;
+  let total_states_opened = 0;
   let max_states_in_memory = 0;
   let seen_hashes = {};
   let queue_priorities;
@@ -343,7 +357,7 @@ function compute (initial_array, heuristic) {
     if (size_now > max_states_in_memory) {
       max_states_in_memory = size_now;
       if (max_states_in_memory % 100000 === 0) {
-        console.log(`states opened: ${max_states_opened}\tmax in memory: ${max_states_in_memory}`);
+        console.log(`Total States Opened: ${total_states_opened}\tMax Ever in Queue: ${max_states_in_memory}`);
       }
     }
 
@@ -374,29 +388,30 @@ function compute (initial_array, heuristic) {
     neighbours.forEach((neighbour) => {
       let hash = neighbour.get_hash();
       let moves = neighbour.get_moves();
-      if (seen_hashes[hash] + '' == moves + '') {
+      if (seen_hashes[hash] &&  seen_hashes[hash] <= moves.length) {
         // console.log('hash clash: ', seen_hashes[hash], "+ '' ==", moves, "+ ''");
         // process.exit(0);
         return;
       }
-      seen_hashes[hash] = moves;
+      seen_hashes[hash] = moves.length;
 
       if (neighbour.solved()) {
         console.log("We have a winner!");
-        console.log(neighbour);
-        console.log("Max States Opened: " + max_states_opened);
-        console.log("Max States In Memory: " + max_states_in_memory);
+        console.log(neighbour.toString());
+        console.log(neighbour.movesString());
+        console.log("Total States Opened: " + total_states_opened);
+        console.log("Maximum States Ever in Queue: " + max_states_in_memory);
 
         process.exit(0);
         return;
       }
 
-      max_states_opened++;
-      if (max_states_opened % 100000 === 0) {
-        console.log(`states opened: ${max_states_opened}\tmax in memory: ${max_states_in_memory}`);
+      total_states_opened++;
+      if (total_states_opened % 100000 === 0) {
+        console.log(`states opened: ${total_states_opened}\tmax in memory: ${max_states_in_memory}`);
         // console.log(current_board.toString());
       }
-      // if (max_states_opened % 100 === 0) {
+      // if (total_states_opened % 100 === 0) {
       //   Sleep.sleep(0.5);
       // }
 
