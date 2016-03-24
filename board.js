@@ -37,10 +37,10 @@ const possible_moves = [
   { row_delta: -1, col_delta:  0 },
 ];
 const human_moves = [
-  'slideLEFT',
-  'slideUP',
-  'slideRIGHT',
-  'slideDOWN',
+  '- slideLEFT',
+  '- slideUP',
+  '- slideRIGHT',
+  '- slideDOWN',
 ];
 
 class Board {
@@ -257,8 +257,8 @@ class Board {
     var board = this.board_array.slice(0);
     var boardString = '@= Board =@\n';
     while (board.length > this.board_size) {
-      boardString += board.slice(0, this.board_size) + '\n';
-      board = board.slice(this.board_size);
+      boardString += board.splice(0, this.board_size) + '\n';
+      // board = board.slice(this.board_size);
     }
     boardString += board + '\n@= ===== =@';
     return(boardString.replace(/,/g, ' '));
@@ -408,7 +408,7 @@ function compute (initial_array, heuristic) {
 
       total_states_opened++;
       if (total_states_opened % 100000 === 0) {
-        console.log(`states opened: ${total_states_opened}\tmax in memory: ${max_states_in_memory}`);
+        console.log(`Total States Opened: ${total_states_opened}\tMax Ever in Queue: ${max_states_in_memory}`);
         // console.log(current_board.toString());
       }
       // if (total_states_opened % 100 === 0) {
