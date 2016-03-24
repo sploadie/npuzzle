@@ -258,6 +258,16 @@ class Board {
     return(boardString.replace(/,/g, ' '));
   }
 
+  isBroken() {
+    var board = this.board_array.slice().sort();
+    for (var i = 0; i < this.board_size - 1; i++) {
+      if (board[i + 1] == board[i]) {
+        return (true);
+      }
+    }
+    return (false);
+  }
+
   unsolvable() {
     var row = 0;
     var array = this.board_array;
@@ -333,7 +343,7 @@ function compute (initial_array, heuristic) {
     }
 
     var current_board = queue.deq();
-    if (current_board.toString().replace(/[^0]/g, '').length != 1) {
+    if (current_board.isBroken() == true) {
       console.log(current_board.toString(), 'Queue Size:', queue.size());
       console.log('Board broke!');
       process.exit(1);
