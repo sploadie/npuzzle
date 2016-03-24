@@ -338,8 +338,8 @@ function compute (initial_array, heuristic) {
       console.log('Board broke!');
       process.exit(1);
     }
-    // console.log(current_board.toString(), queue.size());
-    // Sleep.sleep(0.5);
+    console.log(current_board.toString(), 'Queue Size:', queue.size());
+    Sleep.sleep(0.5);
 
     // // DEBUG
     // console.log(`current_board priority:`, current_board[heuristic]() + current_board.get_moves().length);
