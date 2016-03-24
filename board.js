@@ -387,13 +387,13 @@ function compute (initial_array, heuristic) {
 
     neighbours.forEach((neighbour) => {
       let hash = neighbour.get_hash();
-      let moves = neighbour.get_moves();
-      if (seen_hashes[hash] &&  seen_hashes[hash] <= moves.length) {
+      let move_count = neighbour.get_moves().length;
+      if (seen_hashes[hash] &&  seen_hashes[hash] <= move_count) {
         // console.log('hash clash: ', seen_hashes[hash], "+ '' ==", moves, "+ ''");
         // process.exit(0);
         return;
       }
-      seen_hashes[hash] = moves.length;
+      seen_hashes[hash] = move_count;
 
       if (neighbour.solved()) {
         console.log("We have a winner!");
@@ -416,7 +416,7 @@ function compute (initial_array, heuristic) {
       // }
 
       if (neighbour.isBroken() == true) {
-        console.log(neighbour.toString(), 'Last Move:', moves[0]);
+        console.log(neighbour.toString(), 'Last Move:', neighbour.get_moves()[0]);
         console.log('Board broke!');
         process.exit(1);
       }
