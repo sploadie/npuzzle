@@ -1,9 +1,9 @@
 "use strict"; // so that we can do fun es6 things
 
-const _             = require('underscore');
-var engine = require("./board.js")
+const _    = require('underscore');
+var engine = require("./board.js");
 
-var readfile = function(filename)	{
+var read_file = function(filename)	{
 	var fs = require("fs");
 	try {
 	  var data = fs.readFileSync(filename,'utf8');
@@ -66,7 +66,7 @@ var parse = function(argv) {
 		console.log("One file please: no more, no less.");
 		process.exit(1);
 	}
-	var data = readfile(argv[2]);
+	var data = read_file(argv[2]);
 	var split_data = data.split("\n");
 
 	// Removes comments from file
