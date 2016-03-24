@@ -115,7 +115,7 @@ class Board {
       // find where 0 is
       findZeroLoop: for (var row = 0; row < this.board_size; row++) {
         for (var col = 0; col < this.board_size; col++) {
-          if (!this.board_array[row][col]) {
+          if (this.board_array[row * this.board_size + col] == 0) {
             this.zero_tile = { row, col };
             break findZeroLoop;
           }
@@ -308,6 +308,10 @@ function compute (initial_array, heuristic) {
   var initial_board = new Board(initial_array, board_size);
   console.log('### INITIAL BOARD ###', '\n' + initial_board.toString(), '\n\n### SOLUTION ###');
 
+  if (initial_board.isBroken()) {
+    console.log("This puzzle is broken. Nice try.");
+    process.exit(0);
+  }
   if (initial_board.solved()) {
     console.log("This one was solved before we even began trying - " +
         "we're going to be honest and take no credit for this one.");
@@ -344,13 +348,13 @@ function compute (initial_array, heuristic) {
     }
 
     var current_board = queue.deq();
-    if (current_board.isBroken() == true) {
-      console.log(current_board.toString(), 'Queue Size:', queue.size());
-      console.log('Board broke!');
-      process.exit(1);
-    }
-    console.log(current_board.toString(), 'Queue Size:', queue.size());
-    Sleep.sleep(0.5);
+    // if (current_board.isBroken() == true) {
+    //   console.log(current_board.toString(), 'Queue Size:', queue.size());
+    //   console.log('Board broke!');
+    //   process.exit(1);
+    // }
+    // console.log(current_board.toString(), 'Queue Size:', queue.size());
+    // Sleep.sleep(0.5);
 
     // // DEBUG
     // console.log(`current_board priority:`, current_board[heuristic]() + current_board.get_moves().length);
@@ -396,6 +400,11 @@ function compute (initial_array, heuristic) {
       //   Sleep.sleep(0.5);
       // }
 
+      if (neighbour.isBroken() == true) {
+        console.log(neighbour.toString(), 'Last Move:', moves[0]);
+        console.log('Board broke!');
+        process.exit(1);
+      }
       queue.enq(neighbour);
     });
   }
