@@ -18,13 +18,9 @@ function map_to_array(map, board_size) {
 
 function inversions(array) {
   var inversions = 0;
-  console.log(array);
   for (var x = 0; x < array.length; x++) {
     for (var y = x + 1; y < array.length; y++) {
       if (parseInt(array[x]) > parseInt(array[y])) {
-        console.log(array[x]);
-        console.log(array[y]);
-        console.log("--------");
         inversions++;
       }
     }
@@ -337,8 +333,8 @@ class Board {
     // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
 
     // var goal_inversions = inversions(array);
-    console.log("------------ SPIRAL -------------")
-    console.log(this.spiral);
+    // console.log("------------ SPIRAL -------------")
+    // console.log(this.spiral);
     var goal_inversions = inversions(this.spiral);
     // var curr_inversions = inversions(["1", "2", "3", "4", "5", "6", "7", "0", "8"]);
 
@@ -362,12 +358,12 @@ class Board {
     //     // goal_inversions += answer_array.indexOf(0) / this.board_size;
 
     // }
-    console.log("Got to the end");
+    // console.log("Got to the end");
     // return (curr_inversions % 2 == goal_inversions % 2);
-    console.log("Current Inversions: ")
-    console.log(goal_inversions);
-    console.log("Manhattan Distance: ");
-    console.log(sum);
+    // console.log("Current Inversions: ")
+    // console.log(goal_inversions);
+    // console.log("Manhattan Distance: ");
+    // console.log(sum);
     return (((goal_inversions % 2) + (sum % 2)) % 2 == 0);
 
   }
