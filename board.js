@@ -119,7 +119,7 @@ class Board {
       this.answer_map[0] = { row, col };
 
 			// set the final data in this.spiral
-			this.spiral[8] =
+			this.spiral[this.board_array.length - 1] =
 					this.board_array[row * this.board_size + col];
 
 			console.log("this.spiral:", this.spiral);
