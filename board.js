@@ -173,7 +173,7 @@ class Board {
         displaced++;
       }
       else if (this.answer_map[this.board_array[z]].col == z % this.board_size) {
-
+        displaced++;
       }
     }
 
