@@ -64,7 +64,7 @@ if __name__ == "__main__":
 	parser.add_argument("size", type=int, help="Size of the puzzle's side. Must be >3.")
 	parser.add_argument("-s", "--solvable", action="store_true", default=False, help="Forces generation of a solvable puzzle. Overrides -u.")
 	parser.add_argument("-u", "--unsolvable", action="store_true", default=False, help="Forces generation of an unsolvable puzzle")
-	parser.add_argument("-i", "--iterations", type=int, default=100, help="Number of passes")
+	parser.add_argument("-i", "--iterations", type=int, default=101, help="Number of passes")
 
 	args = parser.parse_args()
 

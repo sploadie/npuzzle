@@ -18,9 +18,13 @@ function map_to_array(map, board_size) {
 
 function inversions(array) {
   var inversions = 0;
+  console.log(array);
   for (var x = 0; x < array.length; x++) {
     for (var y = x + 1; y < array.length; y++) {
       if (parseInt(array[x]) > parseInt(array[y])) {
+        console.log(array[x]);
+        console.log(array[y]);
+        console.log("--------");
         inversions++;
       }
     }
@@ -324,17 +328,39 @@ class Board {
       }
     }
     // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
-    var goal_inversions = inversions(array);
-    var curr_inversions = inversions(answer_array);
 
+    // var goal_inversions = inversions(array);
+    var goal_inversions = inversions(["12", "3", "14", "4", "6", "7", "9", "15", "10", "11", "2", "1", "5", "8", "13"]);
+    // var curr_inversions = inversions(["1", "2", "3", "4", "5", "6", "7", "0", "8"]);
+
+    var sum = 0;
+    var x = 0;
+    var y = 0;
+    let index = 0;
+    for (var row = 0; row < this.board_size; row++) {
+      for (var column = 0; column < this.board_size; column++) {
+        // row - answer[current_number][row/col]
+        x = Math.abs(row - this.answer_map[this.board_array[index]].row);
+        y = Math.abs(column - this.answer_map[this.board_array[index]].col);
+        sum += x + y;
+        index++;
+      }
+    }
     // If board size is odd, odd number of inversions means puzzle is unsolvable. Even puzzle inversions plus row is unsolvable if even
     // Returning 1 for unsolvable
-    if (this.board_size % 2 == 0) { // In this case, the row of the '0' tile matters
-        curr_inversions += array.indexOf(0) / this.board_size;
-        goal_inversions += answer_array.indexOf(0) / this.board_size;
-    }
+    // if (this.board_size % 2 == 0) { // In this case, the row of the '0' tile matters
+    //     curr_inversions += sum;
+    //     // goal_inversions += answer_array.indexOf(0) / this.board_size;
+
+    // }
     console.log("Got to the end");
-    return (curr_inversions % 2 == goal_inversions % 2);
+    // return (curr_inversions % 2 == goal_inversions % 2);
+    console.log("Current Inversions: ")
+    console.log(goal_inversions);
+    console.log("Manhattan Distance: ");
+    console.log(sum);
+    return (((goal_inversions % 2) + (sum % 2)) % 2 == 0);
+
   }
 
   solved () {
@@ -416,7 +442,7 @@ function compute (initial_array, heuristic) {
     neighbours.forEach((neighbour) => {
       let hash = neighbour.get_hash();
       let move_count = neighbour.get_moves().length;
-      if (seen_hashes[hash] &&  seen_hashes[hash] <= move_count) {
+      if (seen_hashes[hash] &&  seen_hashes[hash] >= move_count) {
         // console.log('hash clash: ', seen_hashes[hash], "+ '' ==", moves, "+ ''");
         // process.exit(0);
         return;
@@ -451,7 +477,6 @@ function compute (initial_array, heuristic) {
       queue.enq(neighbour);
     });
   }
-
   throw new Error("Couldn't solve :(");
 }
 
