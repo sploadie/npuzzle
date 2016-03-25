@@ -64,7 +64,11 @@ class Board {
     if (answer_map) {
       this.answer_map = answer_map;
     } else {
-      // calculate the answer map from scratch
+      // calculate the answer map from scratch (and also calculate this.spiral)
+
+      // NOTE: this.spiral will only be defined if answer_map is falsey
+			this.spiral = new Array(board_array.length);
+
       let curr_move_index = 0;
       let row = 0;
       let col = 0;
@@ -79,6 +83,11 @@ class Board {
       for (let number = 1; number < map_length; number++) {
         // set the current number
         this.answer_map[number] = { row, col };
+
+        // set the data in this.spiral
+				this.spiral[number - 1] =
+						this.board_array[row * this.board_size + col];
+
         // if we're going to hit an edge or previously set numbers, turn
         if (path_index === before_turning) {
           // turn right once
@@ -105,10 +114,11 @@ class Board {
       // set the 0 (we already moved so we're in the right place)
       this.answer_map[0] = { row, col };
 
-      // console.log("answer_map:");
-      // _.each(this.answer_map, (value, number) => {
-      //  console.log("number, value:", number, value);
-      // });
+			// set the final data in this.spiral
+			this.spiral[8] =
+					this.board_array[row * this.board_size + col];
+
+			console.log("this.spiral:", this.spiral);
     }
 
     if (zero_tile) {
@@ -449,4 +459,3 @@ module.exports = {
   Board,
   compute,
 };
-
