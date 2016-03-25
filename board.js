@@ -37,10 +37,10 @@ const possible_moves = [
   { row_delta: -1, col_delta:  0 },
 ];
 const human_moves = [
-  '- slideLEFT',
-  '- slideUP',
   '- slideRIGHT',
   '- slideDOWN',
+  '- slideLEFT',
+  '- slideUP',
 ];
 
 class Board {
@@ -147,24 +147,40 @@ class Board {
   }
 
   hamming_distance () {
-    console.log("need to rewrite to use new board_array structure");
     if (this.hamming_distance_cached) {
       return this.hamming_distance_cached;
     }
-
+    // Dont think the point at which distance is added is correct
     var distance = 0;
-    for (var z = 0; z < (Math.pow(this.board_size, 2) - 1); z++) {
-      if (this.board_array[Math.floor(z / this.board_size)][z % this.board_size] != (z + 1)) {
+    for (var z = 0; z < Math.pow(this.board_size, 2); z++) {
+      if (this.answer_map[this.board_array[z]].row == Math.floor(z / this.board_size) && this.answer_map[this.board_array[z]].col == z % this.board_size) {
         distance++;
       }
     }
-    z += 1;
-    if (this.board_array[this.board_size - 1][this.board_size - 1] !== 0) {
-      distance++;
-    }
-
     this.hamming_distance_cached = distance;
     return distance;
+  }
+
+  out_row_column () {
+    if (this.out_row_column_cached) {
+      return this.out_row_column_cached;
+    }
+    var displaced = 0;
+
+
+    for (var z = 0; z < Math.pow(this.board_size, 2); z++) {
+      if (this.answer_map[this.board_array[z]].row == Math.floor(z / this.board_size))   {
+        displaced++;
+      }
+      else if (this.answer_map[this.board_array[z]].col == z % this.board_size) {
+
+      }
+    }
+
+
+
+    this.out_row_column_cached = displaced;
+    return displaced;
   }
 
   manhattan_distance () {
@@ -185,9 +201,6 @@ class Board {
         index++;
       }
     }
-
-    // console.log("this.board_array, sum:", _.flatten(this.board_array), sum);
-
     this.manhattan_distance_cached = sum;
     return sum;
   }
@@ -284,14 +297,20 @@ class Board {
 
   unsolvable() {
     var row = 0;
-    var array = this.board_array;
+    var array = this.board_array.slice(0);
     var answer_array = map_to_array(this.answer_map, this.board_size);
-
     // Removing 0 from array
     for (var i = array.length - 1; i >= 0; i--) {
-      if (array[i] === '0') {
+      if (array[i] == '0') {
         row = Math.floor(i / this.board_size); // technically this.zero.row
         array.splice(i, 1);
+      }
+    }
+    // Removing 0 from answer_array
+    for (var i = answer_array.length - 1; i >= 0; i--) {
+      if (answer_array[i] == '0') {
+        row = Math.floor(i / this.board_size); // technically this.zero.row
+        answer_array.splice(i, 1);
       }
     }
     // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
@@ -304,7 +323,7 @@ class Board {
         curr_inversions += array.indexOf(0) / this.board_size;
         goal_inversions += answer_array.indexOf(0) / this.board_size;
     }
-
+    console.log("Got to the end");
     return (curr_inversions % 2 == goal_inversions % 2);
   }
 
@@ -321,7 +340,6 @@ function compute (initial_array, heuristic) {
   let board_size = parseInt(Math.sqrt(initial_array.length));
   var initial_board = new Board(initial_array, board_size);
   console.log('### INITIAL BOARD ###', '\n' + initial_board.toString(), '\n\n### SOLUTION ###');
-
   if (initial_board.isBroken()) {
     console.log("This puzzle is broken. Nice try.");
     process.exit(0);
@@ -426,45 +444,9 @@ function compute (initial_array, heuristic) {
 
   throw new Error("Couldn't solve :(");
 }
-// const test1  = new Board("11 6 8 7 5 15 4 3 9 2 12 13 1 14 10 0", 4, 0, 0);
-// const test1  = new Board("1 2 3 8 0 4 7 6 5", 3, 0, 0);
-// const test1  = new Board("1 2 3 4 12 13 14 5 11 0 15 6 10 9 8 7", 4, 0, 0);
-// const test1  = new Board("1 2 3 4 5 16 17 18 19 6 15 24 0 20 7 14 23 22 21 8 13 12 11 10 9", 5, 0, 0);
-
-// const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
-// const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
-
-// const test1  = new Board("2 4 3 5 0 6 7 8 9 10 11 13 1 14 15 12", 4, 0, 0);
-// const test1  = new Board("1 2 3 4 5 6 0 8 9 10 7 11 13 14 15 12", 4, 0, 0);
-// const test1  = new Board("1 2 3 4 6 7 5 8 0", 3, 0, 0);
-// const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0", 4, 0, 0);
-// const answer = new Board("1 2 3 4 5 6 7 8 0", 3, 0, 0);
-// const answer = new Board("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 19 20 21 22 23 24 0", 5, 0, 0);
-
-// test1.unsolvable();
-// compute(test1, answer, "manhattan_distance");
-// const answer = new Board("1 2 3 4 5 6 7 8 0", 3);
-// const test2 = new Board("8 1 3 4 0 6 7 2 5", 3);
-
-// console.log(test2.neighbours());
-// console.log(test2.toString());
-// console.log(test0.equals(test1));
-
 
 module.exports = {
   Board,
   compute,
 };
 
-// new Board([[1, 2], [3, 0]]);
-// var hello = new Board([[1, 2, 3], [7, 0, 4], [8, 6, 5]]);
-// var hello = new Board([[1, 2, 3], [4, 5, 6], [7, 8, 0]]);
-// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
-// compute(hello, 0);
-// new Board([[1, 2], [3, 0]]);
-// var hello = [[6, 2, 0], [4, 1, 7], [5, 3, 8]];
-// var hello = [[1, 2, 3], [0, 8, 4], [7, 6, 5]];
-// var hello = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
-// var hello = new Board([[0, 2, 3, 1], [5, 6, 7, 8], [9, 10, 11, 15], [13, 14, 12, 4]]);
-// hello.neighbours();
-// compute(hello, 0);

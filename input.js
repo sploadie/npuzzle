@@ -62,6 +62,23 @@ var check_number_sequence = function(array, n) {
 };
 
 var parse = function(argv) {
+  var heuristic = "manhattan_distance";
+  for (var i = 0; i < argv.length; i++) {
+    if (argv[i] == "--manhattan") {
+      argv.splice(i, 1);
+      break;
+    }
+    else if (argv[i] == "--hamming") {
+      heuristic = "hamming_distance";
+      argv.splice(i, 1);
+      break;
+    }
+    else if (argv[i] == "--out") {
+      heuristic = "out_row_column";
+      argv.splice(i, 1);
+      break;
+    }
+  }
 	if (argv.length != 3) {
 		console.log("One file please: no more, no less.");
 		process.exit(1);
@@ -106,7 +123,7 @@ var parse = function(argv) {
   console.log('\n### PARSED INFORMATION ###');
 	console.log('Size:', n);
   console.log('Puzzle:', npuzzle + '', '\n');
-	engine.compute(npuzzle, "manhattan_distance");
+	engine.compute(npuzzle, heuristic);
 
 };
 
