@@ -327,10 +327,19 @@ class Board {
         answer_array.splice(i, 1);
       }
     }
+    // Removing 0 from answer_array
+    for (var i = this.spiral.length - 1; i >= 0; i--) {
+      if (this.spiral[i] == '0') {
+        row = Math.floor(i / this.board_size); // technically this.zero.row
+        this.spiral.splice(i, 1);
+      }
+    }
     // Shouldn't matter that 0 has not been spliced from goal array, it has no effect no inversion number
 
     // var goal_inversions = inversions(array);
-    var goal_inversions = inversions(["12", "3", "14", "4", "6", "7", "9", "15", "10", "11", "2", "1", "5", "8", "13"]);
+    console.log("------------ SPIRAL -------------")
+    console.log(this.spiral);
+    var goal_inversions = inversions(this.spiral);
     // var curr_inversions = inversions(["1", "2", "3", "4", "5", "6", "7", "0", "8"]);
 
     var sum = 0;

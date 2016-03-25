@@ -1,6 +1,6 @@
-# Puzzles can be aligned, or NOT. whatever. accept both.
+# This puzzle is solvable
 4
-0 3  13 4
-2 11 12 14
-1 15 5 6
-10 9 8  7
+ 1  3 15  5
+13 11 12 14
+ 2  8  6  4
+10  9  7  0
