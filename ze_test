@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [[ -n "$@" ]]; then
+	ARGS="$@"
+else
+	ARGS="-s 3"
+fi
+
+echo "--> python puzzle_generator.py $ARGS"
+
+python puzzle_generator.py $ARGS > ze_test_board.txt
+cat ze_test_board.txt
+node --max_old_space_size=16000 input.js ze_test_board.txt
