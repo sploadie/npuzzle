@@ -160,10 +160,10 @@ class Board {
     if (this.hamming_distance_cached) {
       return this.hamming_distance_cached;
     }
-    // Dont think the point at which distance is added is correct
+    // Dont think the point at which distance is added is correct - FIXED
     var distance = 0;
     for (var z = 0; z < Math.pow(this.board_size, 2); z++) {
-      if (this.answer_map[this.board_array[z]].row == Math.floor(z / this.board_size) && this.answer_map[this.board_array[z]].col == z % this.board_size) {
+      if (this.answer_map[this.board_array[z]].row != Math.floor(z / this.board_size) || this.answer_map[this.board_array[z]].col != z % this.board_size) {
         distance++;
       }
     }
@@ -176,19 +176,14 @@ class Board {
       return this.out_row_column_cached;
     }
     var displaced = 0;
-
-
     for (var z = 0; z < Math.pow(this.board_size, 2); z++) {
-      if (this.answer_map[this.board_array[z]].row == Math.floor(z / this.board_size))   {
+      if (this.answer_map[this.board_array[z]].row != Math.floor(z / this.board_size) && this.board_array[z] != '0')   {
         displaced++;
       }
-      else if (this.answer_map[this.board_array[z]].col == z % this.board_size) {
+      if (this.answer_map[this.board_array[z]].col != z % this.board_size && this.board_array[z] != '0') {
         displaced++;
       }
     }
-
-
-
     this.out_row_column_cached = displaced;
     return displaced;
   }
@@ -396,7 +391,7 @@ function compute (initial_array, heuristic) {
   }
 
   // set up heuristic
-  if (["manhattan_distance", "hamming_distance"].indexOf(heuristic) === -1) {
+  if (["manhattan_distance", "hamming_distance", "out_row_column"].indexOf(heuristic) === -1) {
     throw new Error("invalid heuristic function name");
   }
   var queue = new PriorityQueue(function(a, b) {
@@ -447,6 +442,7 @@ function compute (initial_array, heuristic) {
     neighbours.forEach((neighbour) => {
       let hash = neighbour.get_hash();
       let move_count = neighbour.get_moves().length;
+      // FIXME check if this is right. Why was it not working before?
       if (seen_hashes[hash] &&  seen_hashes[hash] >= move_count) {
         // console.log('hash clash: ', seen_hashes[hash], "+ '' ==", moves, "+ ''");
         // process.exit(0);
