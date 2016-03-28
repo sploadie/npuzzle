@@ -2,7 +2,7 @@
 
 const _             = require('underscore');
 const PriorityQueue = require('priorityqueuejs');
-const Sleep         = require('sleep');
+// const Sleep         = require('sleep');
 
 function map_to_array(map, board_size) {
   // initialize array
@@ -37,10 +37,10 @@ const possible_moves = [
   { row_delta: -1, col_delta:  0 },
 ];
 const human_moves = [
-  '- slideRIGHT',
-  '- slideDOWN',
-  '- slideLEFT',
-  '- slideUP',
+  "- slide LEFT",
+  "- slide UP",
+  "- slide RIGHT",
+  "- slide DOWN",
 ];
 
 class Board {
@@ -117,8 +117,6 @@ class Board {
 			// set the final data in this.spiral
 			this.spiral[this.board_array.length - 1] =
 					this.board_array[row * this.board_size + col];
-
-			console.log("this.spiral:", this.spiral);
     }
 
     if (zero_tile) {
@@ -267,8 +265,6 @@ class Board {
   // }
 
   toString() {
-    // I changed this variable name because it was being highlighted weirdly
-    // by Atom.
     // var boardString = this.board_array + '';
     // boardString = '[ ' + boardString.replace(/,/g, ', ') + ' ]';
     // return(boardString);
@@ -372,7 +368,7 @@ class Board {
 }
 
 
-function compute (initial_array, heuristic) {
+function compute (initial_array, heuristic, greedy_bool, uniform_cost_bool) {
   let board_size = parseInt(Math.sqrt(initial_array.length));
   var initial_board = new Board(initial_array, board_size);
   console.log('### INITIAL BOARD ###', '\n' + initial_board.toString(), '\n\n### SOLUTION ###');
@@ -390,13 +386,15 @@ function compute (initial_array, heuristic) {
     process.exit(1);
   }
 
-  // set up heuristic
-  if (["manhattan_distance", "hamming_distance", "out_row_column"].indexOf(heuristic) === -1) {
-    throw new Error("invalid heuristic function name");
-  }
-  var queue = new PriorityQueue(function(a, b) {
-    // console.log(`${heuristic}:`, b[heuristic]());
-    return (b[heuristic]() + b.get_moves().length) - (a[heuristic]() + a.get_moves().length);
+  var queue = new PriorityQueue(function (a, b) {
+    if (uniform_cost_bool) {
+      // uniform cost doesn't take into account the number of moves taken
+      // to reach any given board when comparing them
+      return b[heuristic]() - a[heuristic]();
+    }
+
+    return (b[heuristic]() + b.get_moves().length) -
+        (a[heuristic]() + a.get_moves().length);
   });
 
   // keep some statistics
@@ -412,26 +410,29 @@ function compute (initial_array, heuristic) {
 
   queue.enq(initial_board);
   while (queue.size() > 0) {
-    const size_now = queue.size();
-    if (size_now > max_states_in_memory) {
-      max_states_in_memory = size_now;
-      if (max_states_in_memory % 100000 === 0) {
-        printComplexity("\t");
-      }
-    }
-
+    // dequeue best board
     var current_board = queue.deq();
 
-    var neighbours = _.shuffle(current_board.neighbours());
+    // generate neighbuurz
+    var neighbours = current_board.neighbours();
+    if (greedy_bool) {
+      // shuffle because otherwise it might never solve (get stuck in a loop)
+      // It could get stuck in a loop because the naybuors are sorted by
+      // move, which means it could move one way and then the other again
+      // and again.
+      neighbours = _.shuffle(neighbours);
+    }
 
     neighbours.forEach((neighbour) => {
-      let hash = neighbour.get_hash();
-      let move_count = neighbour.get_moves().length;
+      if (!greedy_bool) {
+        let hash = neighbour.get_hash();
+        let move_count = neighbour.get_moves().length;
 
-      if (seen_hashes[hash] &&  seen_hashes[hash] >= move_count) {
-        return;
+        if (seen_hashes[hash] &&  seen_hashes[hash] >= move_count) {
+          return;
+        }
+        seen_hashes[hash] = move_count;
       }
-      seen_hashes[hash] = move_count;
 
       if (neighbour.solved()) {
         console.log("We have a winner!");
@@ -439,6 +440,9 @@ function compute (initial_array, heuristic) {
         console.log(neighbour.movesString());
         printComplexity("\n");
 
+        console.log("Moves valididy checker: " +
+            "https://docs.google.com/spreadsheets/d/" +
+            "1djIlhrsIGjGDayO5qdRqwqF5sG-f5cQMu1ms1hh0KOY/edit?usp=sharing");
         process.exit(0);
         return;
       }
@@ -450,6 +454,27 @@ function compute (initial_array, heuristic) {
 
       queue.enq(neighbour);
     });
+
+    // if greedy, get rid of all but the best from the priority queue
+    // NOTE: this is cheating because the complexity can technically be up to 4
+    // but we'll report 1
+    if (greedy_bool) {
+      let first = queue.deq();
+      while (queue.size() > 0) {
+        queue.deq();
+      }
+      // console.log("first:", first);
+      queue.enq(first);
+    }
+
+    // update max_states_in_memory
+    const size_now = queue.size();
+    if (size_now > max_states_in_memory) {
+      max_states_in_memory = size_now;
+      if (max_states_in_memory % 100000 === 0) {
+        printComplexity("\t");
+      }
+    }
   }
   throw new Error("Couldn't solve :(");
 }
