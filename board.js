@@ -402,6 +402,11 @@ function compute (initial_array, heuristic) {
   // keep some statistics
   let total_states_opened = 0;
   let max_states_in_memory = 0;
+  function printComplexity(breakCharacter) {
+    console.log(`Total States Opened: ${total_states_opened}${breakCharacter}` +
+        `Maximum States Ever in Queue: ${max_states_in_memory}`);
+  }
+
   let seen_hashes = {};
   let queue_priorities;
 
@@ -411,41 +416,19 @@ function compute (initial_array, heuristic) {
     if (size_now > max_states_in_memory) {
       max_states_in_memory = size_now;
       if (max_states_in_memory % 100000 === 0) {
-        console.log(`Total States Opened: ${total_states_opened}\tMax Ever in Queue: ${max_states_in_memory}`);
+        printComplexity("\t");
       }
     }
 
     var current_board = queue.deq();
-    // if (current_board.isBroken() == true) {
-    //   console.log(current_board.toString(), 'Queue Size:', queue.size());
-    //   console.log('Board broke!');
-    //   process.exit(1);
-    // }
-    // console.log(current_board.toString(), 'Queue Size:', queue.size());
-    // Sleep.sleep(0.5);
 
-    // // DEBUG
-    // console.log(`current_board priority:`, current_board[heuristic]() + current_board.get_moves().length);
-    // queue_priorities = [];
-    // queue.forEach(function(board) {
-    //   queue_priorities.push(board[heuristic]() + board.get_moves().length)
-    // });
-    // console.log(`queue priorities:`, queue_priorities + '');
-    // // process.exit(0);
-    // Sleep.sleep(0.5);
-    // // DEBUG
-
-    // shuffle nayboorz because otherwise we'll make a disproportionate
-    // number of moves in the same direction
     var neighbours = _.shuffle(current_board.neighbours());
 
     neighbours.forEach((neighbour) => {
       let hash = neighbour.get_hash();
       let move_count = neighbour.get_moves().length;
-      // FIXME check if this is right. Why was it not working before?
+
       if (seen_hashes[hash] &&  seen_hashes[hash] >= move_count) {
-        // console.log('hash clash: ', seen_hashes[hash], "+ '' ==", moves, "+ ''");
-        // process.exit(0);
         return;
       }
       seen_hashes[hash] = move_count;
@@ -454,8 +437,7 @@ function compute (initial_array, heuristic) {
         console.log("We have a winner!");
         console.log(neighbour.toString());
         console.log(neighbour.movesString());
-        console.log("Total States Opened: " + total_states_opened);
-        console.log("Maximum States Ever in Queue: " + max_states_in_memory);
+        printComplexity("\n");
 
         process.exit(0);
         return;
@@ -463,18 +445,9 @@ function compute (initial_array, heuristic) {
 
       total_states_opened++;
       if (total_states_opened % 100000 === 0) {
-        console.log(`Total States Opened: ${total_states_opened}\tMax Ever in Queue: ${max_states_in_memory}`);
-        // console.log(current_board.toString());
+        printComplexity("\t");
       }
-      // if (total_states_opened % 100 === 0) {
-      //   Sleep.sleep(0.5);
-      // }
 
-      if (neighbour.isBroken() == true) {
-        console.log(neighbour.toString(), 'Last Move:', neighbour.get_moves()[0]);
-        console.log('Board broke!');
-        process.exit(1);
-      }
       queue.enq(neighbour);
     });
   }
