@@ -169,6 +169,36 @@ class Board {
     return distance;
   }
 
+  supermanham () {
+    if (this.supermanham_cached) {
+      return this.supermanham_cached;
+    }
+    let distance = 0;
+    distance = (this.manhattan_distance() + this.hamming_distance()) / 2;
+    this.supermanham_cached = distance;
+    return distance;
+  }
+
+  supermanout () {
+    if (this.supermanham_cached) {
+      return this.supermanham_cached;
+    }
+    let distance = 0;
+    distance = (this.manhattan_distance() + this.out_row_column()) / 2;
+    this.supermanham_cached = distance;
+    return distance;
+  }
+
+  superhamout () {
+    if (this.supermanham_cached) {
+      return this.supermanham_cached;
+    }
+    let distance = 0;
+    distance = (this.hamming_distance() + this.out_row_column()) / 2;
+    this.supermanham_cached = distance;
+    return distance;
+  }
+
   out_row_column () {
     if (this.out_row_column_cached) {
       return this.out_row_column_cached;

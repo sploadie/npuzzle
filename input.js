@@ -85,6 +85,18 @@ var parse = function(argv) {
       heuristic = "out_row_column";
 			parsed_args_count++;
     }
+    else if (current_arg === "--bonus1") {
+      heuristic = "supermanham";
+		parsed_args_count++;
+    }
+    else if (current_arg === "--bonus2") {
+      heuristic = "supermanout";
+		parsed_args_count++;
+    }
+    else if (current_arg === "--bonus3") {
+      heuristic = "superhamout";
+		parsed_args_count++;
+    }
 	else if (current_arg === "--greedy") {
 		greedy_bool = true;
 		parsed_args_count++;
@@ -166,7 +178,6 @@ every man's needs, but not every man's greed." ~ Mahatma Gandhi
 	if (uniform_cost_bool) {
 		console.log("Uniform cost enabled. Don't do this at home, kids.\n");
 	}
-
 	let heuristic_name;
 	if (heuristic === "manhattan_distance") {
 		heuristic_name = "Manhattan";
@@ -176,7 +187,11 @@ every man's needs, but not every man's greed." ~ Mahatma Gandhi
 	}
 	else if (heuristic === "out_row_column") {
 		heuristic_name = "Out of row/column";
-	} else {
+	} 
+	else if (heuristic === "superhamout" || heuristic === "supermanout" || heuristic === "supermanham") {
+		heuristic_name = "Bonus"
+	}
+	else {
 		heuristic_name = "Unknown";
 	}
 	// https://youtu.be/lBUJcD6Ws6s
