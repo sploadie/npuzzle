@@ -85,22 +85,22 @@ var parse = function(argv) {
       heuristic = "out_row_column";
 			parsed_args_count++;
     }
-		else if (current_arg === "--greedy") {
-			greedy_bool = true;
-			parsed_args_count++;
-		}
-		else if (current_arg === "--uniform") {
-			uniform_cost_bool = true;
-			parsed_args_count++;
-		}
-		else if (current_arg === "--help") {
-			console.log("Please contact Marco Booth (42 username mbooth).");
-			process.exit(0);
-		}
-		else {
-			console.log("Invalid argument:", current_arg);
-			process.exit(1);
-		}
+	else if (current_arg === "--greedy") {
+		greedy_bool = true;
+		parsed_args_count++;
+	}
+	else if (current_arg === "--uniform") {
+		uniform_cost_bool = true;
+		parsed_args_count++;
+	}
+	else if (current_arg === "--help") {
+		console.log("Please contact Marco Booth (42 username mbooth).");
+		process.exit(0);
+	}
+	else {
+		console.log("Invalid argument:", current_arg);
+		process.exit(1);
+	}
   }
 
 	if (argv.length - parsed_args_count !== 3) {
