@@ -63,26 +63,38 @@ var check_number_sequence = function(array, n) {
 
 var parse = function(argv) {
   var heuristic = "manhattan_distance";
-  for (var i = 0; i < argv.length; i++) {
-    if (argv[i] == "--manhattan") {
-      argv.splice(i, 1);
-      break;
+	let parsed_args_count = 0;
+
+	// NOTE: last argument is the file from which we're going to read.
+  for (var i = 0; i < argv.length - 1; i++) {
+		let current_arg = argv[i];
+
+    if (current_arg === "--manhattan") {
+			heuristic = "manhattan_distance"; // default
+			parsed_args_count++;
     }
-    else if (argv[i] == "--hamming") {
+    else if (current_arg === "--hamming") {
       heuristic = "hamming_distance";
-      argv.splice(i, 1);
-      break;
+      parsed_args_count++;
     }
-    else if (argv[i] == "--out") {
+    else if (current_arg === "--out") {
       heuristic = "out_row_column";
-      argv.splice(i, 1);
-      break;
+			parsed_args_count++;
     }
+		else if (current_arg === "--greedy") {
+			console.log("greedy");
+		}
+		else {
+			console.log("Invalid argument: ", current_arg);
+			process.exit(1);
+		}
   }
-	if (argv.length != 3) {
+
+	if (argv.length - parsed_args_count !== 2) {
 		console.log("One file please: no more, no less.");
 		process.exit(1);
 	}
+
 	var data = read_file(argv[2]);
 	var split_data = data.split("\n");
 
@@ -116,7 +128,8 @@ var parse = function(argv) {
   }
   n = +n;
 
-  // Converts string to integer values. Also checks if integer values are valid and n length is followed on x,y.
+  // Converts string to integer values.
+	// Also checks if integer values are valid and n length is followed on x,y.
  	var npuzzle = _.flatten(convert_integer(array_no_comments, n));
 
   check_number_sequence(npuzzle, n);
