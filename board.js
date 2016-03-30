@@ -67,7 +67,7 @@ class Board {
       // calculate the answer map from scratch (and also calculate this.spiral)
 
       // NOTE: this.spiral will only be defined if answer_map is falsey
-			this.spiral = new Array(board_array.length);
+      this.spiral = new Array(board_array.length);
 
       let curr_move_index = 0;
       let row = 0;
@@ -85,8 +85,8 @@ class Board {
         this.answer_map[number] = { row, col };
 
         // set the data in this.spiral
-				this.spiral[number - 1] =
-						this.board_array[row * this.board_size + col];
+        this.spiral[number - 1] =
+            this.board_array[row * this.board_size + col];
 
         // if we're going to hit an edge or previously set numbers, turn
         if (path_index === before_turning) {
@@ -114,9 +114,9 @@ class Board {
       // set the 0 (we already moved so we're in the right place)
       this.answer_map[0] = { row, col };
 
-			// set the final data in this.spiral
-			this.spiral[this.board_array.length - 1] =
-					this.board_array[row * this.board_size + col];
+      // set the final data in this.spiral
+      this.spiral[this.board_array.length - 1] =
+          this.board_array[row * this.board_size + col];
     }
 
     if (zero_tile) {
@@ -470,7 +470,7 @@ function compute (initial_array, heuristic, greedy_bool, uniform_cost_bool) {
         console.log(neighbour.movesString());
         printComplexity("\n");
 
-        console.log("Moves valididy checker: " +
+        console.log("Moves validity checker: " +
             "https://docs.google.com/spreadsheets/d/" +
             "1djIlhrsIGjGDayO5qdRqwqF5sG-f5cQMu1ms1hh0KOY/edit?usp=sharing");
         process.exit(0);
