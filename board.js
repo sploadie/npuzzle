@@ -443,11 +443,11 @@ function compute (initial_array, heuristic, greedy_bool, uniform_cost_bool) {
     // dequeue best board
     var current_board = queue.deq();
 
-    // generate neighbuurz
+    // generate neighbours
     var neighbours = current_board.neighbours();
     if (greedy_bool) {
       // shuffle because otherwise it might never solve (get stuck in a loop)
-      // It could get stuck in a loop because the naybuors are sorted by
+      // It could get stuck in a loop because the neighbours are sorted by
       // move, which means it could move one way and then the other again
       // and again.
       neighbours = _.shuffle(neighbours);
@@ -470,9 +470,11 @@ function compute (initial_array, heuristic, greedy_bool, uniform_cost_bool) {
         console.log(neighbour.movesString());
         printComplexity("\n");
 
-        console.log("Moves validity checker: " +
-            "https://docs.google.com/spreadsheets/d/" +
-            "1djIlhrsIGjGDayO5qdRqwqF5sG-f5cQMu1ms1hh0KOY/edit?usp=sharing");
+        if (neighbour.board_size == 3) {
+          console.log("Moves validity checker: " +
+              "https://docs.google.com/spreadsheets/d/" +
+              "16AL-Q4x9E-ASqV8PuYWcYnV2P9Cu_CEyiPce6fV4fF8/edit?usp=sharing");
+        }
         process.exit(0);
         return;
       }
